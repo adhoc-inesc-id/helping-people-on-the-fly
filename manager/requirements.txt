@@ -1,0 +1,6 @@
+yaaf
+networkx
+matplotlib
+numpy
+spacy
+pyttsx3
