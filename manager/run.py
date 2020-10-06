@@ -2,6 +2,8 @@
 Manager node main
 Python 3
 """
+import time
+
 import rospy
 from std_msgs.msg import String
 from argparse import ArgumentParser
@@ -226,6 +228,8 @@ if __name__ == '__main__':
     # Run #
     # ### #
 
+    time.sleep(2)
+
     rospy.loginfo("Ready")
 
     initial_state = np.array([0, 0, 1, 0, 0])
@@ -236,6 +240,5 @@ if __name__ == '__main__':
     rate = rospy.Rate(opt.communication_refresh_rate)
 
     request_action_from_decision_node(initial_state)
-    rate.sleep()
 
     rospy.spin()
