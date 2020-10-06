@@ -1,8 +1,8 @@
 import pathlib
 from abc import ABC, abstractmethod
 
-from decision.agents.backend.policies import sample_action
-from decision.agents.backend import Timestep
+from agents.backend.policies import sample_action
+from agents.backend import Timestep
 
 
 class Agent(ABC):

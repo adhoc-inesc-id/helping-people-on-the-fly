@@ -1,6 +1,6 @@
 import csv
 
-from decision.numpy_to_bar_plot import load_results
+from numpy_to_bar_plot import load_results
 
 confidence_level = 0.99
 colors = {"greedy": "g", "bopa": "b", "random": "orange"}

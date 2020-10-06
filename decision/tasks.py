@@ -1,4 +1,4 @@
-from decision.environment.PanicButtonsMMDP import PanicButtonsMMDP
+from environment.PanicButtonsMMDP import PanicButtonsMMDP
 
 
 class PanicButtons(PanicButtonsMMDP):

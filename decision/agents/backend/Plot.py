@@ -4,7 +4,7 @@ from multiprocessing import RLock
 import matplotlib.pyplot as plt
 import numpy as np
 
-from decision.agents.backend import RunStats
+from agents.backend import RunStats
 
 
 class Plot:

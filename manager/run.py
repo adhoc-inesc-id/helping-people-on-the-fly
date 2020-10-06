@@ -9,40 +9,121 @@ import numpy as np
 
 import planar_homography
 
+# ######### #
+# Auxiliary #
+# ######### #
+
+def row_index(row, matrix):
+
+    if not isinstance(row, np.ndarray):
+        row = np.array(row)
+    possible = np.where(np.all(matrix == row, axis=1))
+
+    if len(possible) != 1:
+        raise ValueError("Not a valid row in the matrix")
+    else:
+        return possible[0]
 
 def find_next_node(next_index):
-    adjacencies = np.where(adjacency_matrix[current_node] == 1)[0]
+    adjacencies = np.where(adjacency_matrix[last_known_robot_location] == 1)[0]
     downgrade_to_lower_index = int(next_index) >= len(adjacencies)
     next_index = 0 if downgrade_to_lower_index else next_index
     next_node = adjacencies[next_index]
     return next_node
 
+def send_astro_order(order: str):
+    rospy.loginfo(f"Sent Astro node order {order}")
+    astro_publisher.publish(order)
 
+def map_astro_order(action: int):
+    if "move" in action_meanings[action]:
+        next_node = find_next_node(action)
+        x, y = dead_reckoning_coordinate_map[next_node]
+        order = f"go to {x}, {y}"
+    elif action == 3: order = "stay"
+    else: raise ValueError("Should be unreachable - invalid action index")
+    rospy.loginfo(f"Mapped action {action} to order {order}")
+    return order
+
+def read_astro_node(dead_reckoning):
+
+    x, y, _ = dead_reckoning.split(",")
+    x, y = float(x), float(y)
+
+    global last_known_robot_location
+    try:
+        n_astro = row_index((x, y), dead_reckoning_coordinate_map)
+        last_known_robot_location = n_astro
+    except ValueError:
+        n_astro = last_known_robot_location
+        rospy.loginfo(f"Astro's coordinates {x, y} do not map to any valid known node")
+
+    return n_astro
+
+
+def read_human_feet_camera():
+
+    # TODO - Miguel aqui background subtraction teu
+
+    # 1 - Take picture using camera
+
+    # 2 - Run background subtraction and take x, y of feet in camera coordinates
+    x, y = 0, 0
+
+    return x, y
+
+
+def read_human_node():
+
+    # 1 - Access camera and take human's feet location on camera via background
+    feet_center_of_mass = read_human_feet_camera()
+    camera_frame_point = np.array(feet_center_of_mass)
+
+    # 2 - Get mapped 2d coordinate via planar homography
+    real_world_point = planar_homography.camera_to_real_world_point(camera_frame_point)
+
+    # 4 - Map real world ground position to correct node
+    global last_known_human_location
+    try:
+        n_human = row_index(real_world_point, homography_coordinate_map)
+        last_known_human_location = n_human
+    except ValueError:
+        n_human = last_known_human_location
+
+    return n_human
+
+
+def make_current_state(dead_reckoning):
+
+    global explored_bits
+
+    n_astro = read_astro_node(dead_reckoning)
+    n_human = read_human_node()
+
+    if n_astro in nodes_to_explore:
+        i = nodes_to_explore.index(n_astro)
+        explored_bits[i] = 1
+
+    if n_human in nodes_to_explore:
+        i = nodes_to_explore.index(n_human)
+        explored_bits[i] = 1
+
+    state = np.array([n_astro, n_human] + [explored_bits])
+    rospy.loginfo(f"State: {state}")
+
+    return state
+
+# ######## #
+# Sequence #
+# ######## #
+
+# Step 1
 def request_action_from_decision_node(state: np.ndarray):
     message = " ".join([str(entry) for entry in state])
     rospy.loginfo(f"Sent state to Decision node: '{message}'")
     decision_publisher.publish(message)
 
-
-def send_astro_order(order: str):
-    rospy.loginfo(f"Sent Astro node order {order}")
-    astro_publisher.publish(order)
-
-
-def map_astro_order(action: int):
-
-    if "move" in action_meanings[action]:
-        next_node = find_next_node(action)
-        x, y, z = dead_reckoning_coordinate_map[next_node]
-        order = f"go to {x}, {y}, {z}"
-    elif action == 3: order = "stay"
-    else: raise ValueError("Should be unreachable - invalid action index")
-
-    rospy.loginfo(f"Mapped action {action} to order {order}")
-
-    return order
-
-
+# Step 2
 def receive_decision_node_message(message: String):
 
     rospy.loginfo("")
@@ -60,53 +141,7 @@ def receive_decision_node_message(message: String):
     # Aguardar mensagens do astro
     rospy.loginfo(f"Awaiting Astro node's message")
 
-
-
-def read_astro_node(dead_reckoning):
-    x, y, _ = dead_reckoning.split(",")
-    x, y = float(x), float(y)
-    possible_node = np.where(np.all(dead_reckoning_coordinate_map == np.array([x, y]), axis=1))
-    n_astro = int(possible_node[0]) if len(possible_node) == 1 else current_node
-    return n_astro
-
-def read_human_node():
-
-    # 1 - Access camera and take human's feet location on camera via background
-    # TODO
-    camera_frame_point = np.array([0, 0])
-
-    # 2 - Get mapped 2d coordinate via planar homography
-    real_world_point = planar_homography.camera_to_real_world_point(camera_frame_point)
-
-    # 4 - Map real world ground position to correct node
-    # TODO
-    n_human = 0
-
-    return n_human
-
-
-def make_current_state(dead_reckoning):
-
-    global current_node
-    global explored_bits
-
-    n_astro = read_astro_node(dead_reckoning)
-
-    n_human = read_human_node()
-
-    if n_astro in nodes_to_explore:
-        i = nodes_to_explore.index(n_astro)
-        explored_bits[i] = 1
-
-    if n_human in nodes_to_explore:
-        i = nodes_to_explore.index(n_human)
-        explored_bits[i] = 1
-
-    state = np.array([n_astro, n_human] + [explored_bits])
-    rospy.loginfo(f"State: {state}")
-
-    return state
-
+# Step 3
 def receive_astro_node_message(message: String):
     data = message.data
     dead_reckoning = data.split(";")
@@ -137,10 +172,6 @@ if __name__ == '__main__':
 
     rospy.loginfo(f"Initializing auxiliary structures")
 
-    nodes_to_explore = [0, 1, 4]
-    explored_bits = [1, 0, 0]
-    current_node = 0
-
     action_meanings = (
         "move to lower-index node",
         "move to second-lower-index node",
@@ -159,23 +190,14 @@ if __name__ == '__main__':
         [0, 0, 0, 1, 0],
     ])
 
-    # FIXME - Handcode here the X, Y of astro's referencial
-    dead_reckoning_coordinate_map = np.array([
-        [0.0, 0.0],    # 0
-        [1.0, 0.0],    # 1
-        [2.0, 0.0],    # 2
-        [3.0, 0.0],    # 3
-        [4.0, 0.0],    # 4
-    ])
+    import yaml
+    with open('config.yml', 'r') as file:
+        config = yaml.load(file, Loader=yaml.FullLoader)
 
-    # FIXME - Handcode here the X, Y of homography's real world referencial
-    homography_coordinate_map = np.array([
-        [0.0, 0.0],    # 0
-        [1.0, 0.0],    # 1
-        [2.0, 0.0],    # 2
-        [3.0, 0.0],    # 3
-        [4.0, 0.0],    # 4
-    ])
+    nodes_to_explore = config["nodes to explore"]
+    explored_bits = [1, 0, 0]
+    dead_reckoning_coordinate_map = np.array(config["graph nodes astro points"])
+    homography_coordinate_map = np.array(config["homography"]["graph nodes real world points"])
 
     rospy.loginfo(f"Initializing ROS Node {opt.node_name}")
 
@@ -206,6 +228,14 @@ if __name__ == '__main__':
 
     rospy.loginfo("Ready")
 
+    initial_state = np.array([0, 0, 1, 0, 0])
+
+    last_known_robot_location = 0
+    last_known_human_location = 0
+
     rate = rospy.Rate(opt.communication_refresh_rate)
+
+    request_action_from_decision_node(initial_state)
+    rate.sleep()
 
     rospy.spin()

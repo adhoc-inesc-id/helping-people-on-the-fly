@@ -30,8 +30,8 @@ def sizes_bar_plot(domain, config, teammate, agent_names, alias, data, colors, w
     plt.tight_layout()
 
     if not show:
-        yaaf.mkdir("../resources/plots")
-        yaaf.mkdir("../resources/plots/pdf")
+        yaaf.mkdir("../../resources/plots")
+        yaaf.mkdir("../../resources/plots/pdf")
         plt.savefig(f"resources/plots/{domain}-{teammate}-task{config}.png")
         plt.savefig(f"resources/plots/pdf/{domain}-{teammate}-task{config}.png")
     else:
@@ -116,8 +116,8 @@ if __name__ == '__main__':
     teammates = ("greedy", "suboptimal", "random")
 
     if not show:
-        yaaf.rmdir("../resources/plots")
-        yaaf.mkdir("../resources/plots")
+        yaaf.rmdir("../../resources/plots")
+        yaaf.mkdir("../../resources/plots")
 
     for domain in domains:
         print(f"{domain}", flush=True)

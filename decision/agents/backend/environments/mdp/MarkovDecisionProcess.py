@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 
-from decision.agents.backend.environments.Environment import Environment
+from agents.backend.environments.Environment import Environment
 
 
 class MarkovDecisionProcess(Environment, ABC):

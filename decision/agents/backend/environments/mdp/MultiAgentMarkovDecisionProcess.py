@@ -2,7 +2,7 @@ from abc import ABC
 
 import numpy as np
 
-from decision.agents.backend.environments.mdp.MarkovDecisionProcess import MarkovDecisionProcess
+from agents.backend.environments.mdp.MarkovDecisionProcess import MarkovDecisionProcess
 
 
 class MultiAgentMarkovDecisionProcess(MarkovDecisionProcess, ABC):

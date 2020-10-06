@@ -6,10 +6,10 @@ import yaaf
 from yaaf.agents import RandomAgent
 from yaaf.evaluation import TimestepsPerEpisodeMetric
 
-from decision.agents.BOPA import BOPA
-from decision.agents.GreedyDuoAgent import GreedyDuoAgent
-from decision.agents.backend import TaskInferenceAnalyzer
-from decision.tasks import SmallPanicButtons, MediumPanicButtons, LargePanicButtons
+from agents.BOPA import BOPA
+from agents.GreedyDuoAgent import GreedyDuoAgent
+from agents.backend import TaskInferenceAnalyzer
+from tasks import SmallPanicButtons, MediumPanicButtons, LargePanicButtons
 
 # ######### #
 # Utilities #

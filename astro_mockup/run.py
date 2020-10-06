@@ -5,6 +5,7 @@ Final version will run on Astro (Python2)
 from typing import List
 
 import rospy
+import yaml
 from std_msgs.msg import String
 from argparse import ArgumentParser
 
@@ -15,12 +16,12 @@ def say_tts(text, engine):
     engine.say(text)
     engine.runAndWait()
 
-def move_astro(new_x, new_y, new_z):
-    rospy.loginfo(f"Moving astro to {new_x}, {new_y}, {new_z}")
-    # TODO
+# ######## #
+# Sequence #
+# ######## #
 
-
-def receive_order_from_manager(message: String, current_coordinates: List[float]):
+# Step 1
+def receive_order_from_manager(message: String):
 
     rospy.loginfo("")
     rospy.loginfo("New Timestep")
@@ -28,21 +29,29 @@ def receive_order_from_manager(message: String, current_coordinates: List[float]
     order = message.data
     rospy.loginfo(f"Received Manager node order: '{order}'")
 
+    global current_coordinates
+
     if "goto" in order:
         _, next_coordinates = order.split(" ")
-        new_x, new_y, new_z = next_coordinates.split(",")
-        new_x, new_y, new_z = float(new_x), float(new_y), float(new_z)
-        move_astro(new_x, new_y, new_z)
-        new_coordinates = f"{new_x}, {new_y}, {new_z}"
+        new_x, new_y = next_coordinates.split(",")
+        new_x, new_y = float(new_x), float(new_y)
+        move_astro(new_x, new_y)
         current_coordinates[0] = new_x
         current_coordinates[1] = new_y
-        current_coordinates[2] = new_z
+        message = f"{new_x}, {new_y}"
     else:
-        new_coordinates = ",".join([str(i) for i in current_coordinates])
+        message = ",".join([str(i) for i in current_coordinates])
 
-    send_manager_message(new_coordinates)
+    rospy.loginfo(f"After order new coordinates are {message}")
+    send_manager_message(message)
+
+# Step 2
+def move_astro(new_x, new_y):
+    rospy.loginfo(f"Moving astro to {new_x}, {new_y}")
+    # TODO Miguel Código para enviar movimento ao astro aqui
 
 
+# Step 3
 def send_manager_message(message: str):
     rospy.loginfo(f"Sent Manager node message {message}")
     manager_publisher.publish(message)
@@ -67,6 +76,9 @@ if __name__ == '__main__':
 
     rospy.loginfo(f"Initializing auxiliary structures")
 
+    with open('config.yml') as f:
+        config = yaml.load(f.read(), yaml.FullLoader)
+
     if opt.tts:
         tts_engine = pyttsx3.init()
         tts_engine.setProperty("rate", 150)
@@ -75,7 +87,7 @@ if __name__ == '__main__':
         speak = lambda text: rospy.loginfo(f"TTS: {text}")
 
     # Initial position
-    coordinates = [0.0, 0.0, 0.0]
+    current_coordinates = config["initial position"]
 
     rospy.loginfo(f"Initializing ROS Node {opt.node_name}")
 
@@ -84,7 +96,7 @@ if __name__ == '__main__':
     # ########### #
 
     rospy.loginfo(f"Setting up Manager node subscriber (local topic at {opt.manager_subscriber_topic})")
-    callback = lambda message: receive_order_from_manager(message, coordinates)
+    callback = lambda message: receive_order_from_manager(message)
     manager_subscriber = rospy.Subscriber(opt.manager_subscriber_topic, String, callback)
 
     # ########## #

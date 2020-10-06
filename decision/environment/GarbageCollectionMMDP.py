@@ -4,7 +4,7 @@ from typing import Sequence
 import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
-from decision.environment.EnvironmentReckonMMDP import EnvironmentReckonMMDP
+from environment.EnvironmentReckonMMDP import EnvironmentReckonMMDP
 
 
 class GarbageCollectionMMDP(EnvironmentReckonMMDP):

@@ -18,13 +18,13 @@ def send_manager_message(message: String):
 
 
 def receive_manager_message(message: String):
-    time.sleep(3)
     rospy.loginfo("")
     rospy.loginfo("New Timestep")
     message = message.data
     state = np.array([int(o) for o in message.split(" ")])
     rospy.loginfo(f"Received state from Manager node: {state}")
-    action = agent.action(state)
+    action = 0
+    #action = agent.action(state)
     rospy.loginfo(f"Sending action #{action} to Manager node ({action_meanings[action]})")
     send_manager_message(f"{action}")
 

@@ -14,7 +14,7 @@ def setup_homography_matrix(load_cached=True):
             homography_matrix = setup_homography_matrix(load_cached=False)
     else:
         import yaml
-        with open('homography_points.yml', 'r') as file:
+        with open('config.yml', 'r') as file:
             points = yaml.load(file, Loader=yaml.FullLoader)
             real_world_points = np.array([points["real world points"]])
             camera_frame_points = np.array([points["camera frame points"]])
@@ -27,7 +27,7 @@ H = setup_homography_matrix()
 
 def reinitialize_homography_matrix():
     """
-    Creates new homography matrix using points in homography_points.yml
+    Creates new homography matrix using points in config.yml
     """
     global H
     os.remove("homography_matrix.npy")

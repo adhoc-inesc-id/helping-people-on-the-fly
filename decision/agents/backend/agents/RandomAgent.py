@@ -1,5 +1,5 @@
-from decision.agents.backend.agents import Agent
-from decision.agents.backend.policies import random_policy
+from agents.backend.agents import Agent
+from agents.backend.policies import random_policy
 
 
 class Random(Agent):

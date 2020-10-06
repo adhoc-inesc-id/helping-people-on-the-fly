@@ -3,10 +3,10 @@ from itertools import product
 import numpy as np
 from yaaf.agents import RandomAgent
 
-from decision.agents.GreedyDuoAgent import GreedyDuoAgent
-from decision.agents.SubOptimalAgent import SubOptimalAgent
-from decision.agents.backend.environments.mdp.MarkovDecisionProcess import state_index_from
-from decision.agents.backend.environments.mdp.MultiAgentMarkovDecisionProcess import MultiAgentMarkovDecisionProcess
+from agents.GreedyDuoAgent import GreedyDuoAgent
+from agents.SubOptimalAgent import SubOptimalAgent
+from agents.backend.environments.mdp.MarkovDecisionProcess import state_index_from
+from agents.backend.environments.mdp.MultiAgentMarkovDecisionProcess import MultiAgentMarkovDecisionProcess
 
 
 class PanicButtonsMMDP(MultiAgentMarkovDecisionProcess):

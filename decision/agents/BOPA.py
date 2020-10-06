@@ -3,8 +3,8 @@ from typing import Sequence
 import numpy as np
 from yaaf.policies import deterministic_policy
 
-from decision.agents.backend.agents.Agent import Agent
-from decision.agents.backend.environments.mdp.MultiAgentMarkovDecisionProcess import MultiAgentMarkovDecisionProcess as MMDP
+from agents.backend.agents.Agent import Agent
+from agents.backend.environments.mdp.MultiAgentMarkovDecisionProcess import MultiAgentMarkovDecisionProcess as MMDP
 
 
 class BOPA(Agent):

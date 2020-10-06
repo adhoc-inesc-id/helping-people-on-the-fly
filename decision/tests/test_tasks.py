@@ -5,11 +5,11 @@ from yaaf import Timestep
 from yaaf.agents import GreedyAgent
 from yaaf.evaluation import TimestepsPerEpisodeMetric
 
-from decision.agents.BOPA import BOPA
-from decision.agents.GreedyDuoAgent import GreedyDuoAgent
-from decision.environment.EnvironmentReckonMMDP import EnvironmentReckonMMDP
-from decision.environment.GarbageCollectionMMDP import GarbageCollectionMMDP
-from decision.environment.PanicButtonsMMDP import PanicButtonsMMDP
+from agents.BOPA import BOPA
+from agents.GreedyDuoAgent import GreedyDuoAgent
+from environment.EnvironmentReckonMMDP import EnvironmentReckonMMDP
+from environment.GarbageCollectionMMDP import GarbageCollectionMMDP
+from environment.PanicButtonsMMDP import PanicButtonsMMDP
 
 
 def run_episode(agent, environment, observers):

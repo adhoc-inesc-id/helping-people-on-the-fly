@@ -1,6 +1,6 @@
 import numpy as np
 
-from decision.agents.backend.metrics.Metric import Metric
+from agents.backend.metrics.Metric import Metric
 
 
 class TaskInferenceAnalyzer(Metric):

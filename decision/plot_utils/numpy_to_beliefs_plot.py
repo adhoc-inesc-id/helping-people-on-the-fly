@@ -55,10 +55,10 @@ if __name__ == '__main__':
     teammates = ("greedy", "suboptimal", "random")
 
     if not show:
-        yaaf.rmdir("../resources/belief-plots")
-        yaaf.mkdir("../resources/belief-plots")
-        yaaf.rmdir("../resources/belief-plots/pdf")
-        yaaf.mkdir("../resources/belief-plots/pdf")
+        yaaf.rmdir("../../resources/belief-plots")
+        yaaf.mkdir("../../resources/belief-plots")
+        yaaf.rmdir("../../resources/belief-plots/pdf")
+        yaaf.mkdir("../../resources/belief-plots/pdf")
 
     for domain in domains:
         print(f"{domain}", flush=True)

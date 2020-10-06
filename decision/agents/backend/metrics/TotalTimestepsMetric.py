@@ -1,4 +1,4 @@
-from decision.agents.backend.metrics import Metric
+from agents.backend.metrics import Metric
 
 
 class TotalTimestepsMetric(Metric):

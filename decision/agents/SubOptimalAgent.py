@@ -1,7 +1,7 @@
 import random
 
-from decision.agents.backend.agents.Agent import Agent
-from decision.agents.backend.policies import deterministic_policy
+from agents.backend.agents.Agent import Agent
+from agents.backend.policies import deterministic_policy
 
 
 class SubOptimalAgent(Agent):
