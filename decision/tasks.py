@@ -14,7 +14,3 @@ class PanicButtons(PanicButtonsMMDP):
 SmallPanicButtons = lambda teammate, config: PanicButtons(3, teammate, config)
 MediumPanicButtons = lambda teammate, config: PanicButtons(4, teammate, config)
 LargePanicButtons = lambda teammate, config: PanicButtons(5, teammate, config)
-
-SmallPanicButtons("greedy", 1).display_goal()
-SmallPanicButtons("greedy", 2).display_goal()
-SmallPanicButtons("greedy", 3).display_goal()

@@ -30,7 +30,47 @@ def receive_manager_message(message: String):
 
 
 def setup_possible_tasks():
-    return task_factory(size="small", teammate="greedy")
+
+    n_astro, n_human = 0, 0
+    movement_failure_prob = 0.2
+    goals = (
+        [0, 1, 4],
+        [2, 3, 4],
+        [0, 2, 4]
+    )
+
+    return [make_task(nodes, n_astro, n_human, movement_failure_prob, t) for t, nodes in enumerate(goals)]
+
+
+def make_task(nodes_to_explore, n_astro, n_human, movement_failture_probability, task_no):
+
+    from environment.EnvironmentReckonMMDP import EnvironmentReckonMMDP
+
+    adjacency_matrix = np.array([
+        [0, 1, 0, 0, 0],
+        [1, 0, 1, 1, 0],
+        [0, 1, 0, 0, 0],
+        [0, 1, 0, 0, 1],
+        [0, 0, 0, 1, 0],
+    ])
+
+    initial_state = [n_astro, n_human] + [0 for _ in range(len(nodes_to_explore))]
+
+    if n_astro in nodes_to_explore:
+        initial_state[2 + nodes_to_explore.index(n_astro)] = 1
+
+    if n_human in nodes_to_explore:
+        initial_state[2 + nodes_to_explore.index(n_human)] = 1
+
+    task = EnvironmentReckonMMDP(
+        adjacency_matrix,
+        nodes_to_explore,
+        movement_failture_probability,
+        initial_state=np.array(initial_state),
+        id=f"env-reckon-mmdp-v{task_no}")
+
+    return task
+
 
 def setup_agent(possible_tasks):
     return BOPA(possible_tasks)
