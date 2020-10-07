@@ -1,16 +1,10 @@
 from unittest import TestCase
 
-import numpy as np
-from yaaf import Timestep
-from yaaf.agents import GreedyAgent
 from yaaf.evaluation import TimestepsPerEpisodeMetric
-
+from environment.PanicButtonsMMDP import PanicButtonsMMDP
 from agents.BOPA import BOPA
 from agents.GreedyDuoAgent import GreedyDuoAgent
-from environment.EnvironmentReckonMMDP import EnvironmentReckonMMDP
-from environment.GarbageCollectionMMDP import GarbageCollectionMMDP
-from environment.PanicButtonsMMDP import PanicButtonsMMDP
-
+from run_full_empirical_evaluation import task_factory, run
 
 def run_episode(agent, environment, observers):
     terminal = False
@@ -25,62 +19,56 @@ def run_episode(agent, environment, observers):
 class GAIPS2N73Tests(TestCase):
 
     def __init__(self, *args, **kwargs):
-
         super(GAIPS2N73Tests, self).__init__(*args, **kwargs)
+        self._possible_tasks = task_factory("gaips", "small", "greedy")
 
-        self._adjacency_matrix = np.array([
-            [0, 1, 0, 0, 0],
-            [1, 0, 1, 1, 0],
-            [0, 1, 0, 0, 0],
-            [0, 1, 0, 0, 1],
-            [0, 0, 0, 1, 0],
-        ])
-        self._nodes_to_explore = [0, 1, 4]
-        self._dirty_nodes = [2, 4]
-        self._movement_failure_probability = 0.0
-        self._dead_reckoning_failure_probability = 0.0
-        self._transmission_failure_probability = 0.0
+    def _test_known_task(self, task):
 
-    def test_environment_reckon_mmdp_value_iteration(self):
-        mmdp = EnvironmentReckonMMDP(self._adjacency_matrix, self._nodes_to_explore,
-                                     self._movement_failure_probability)
-        self._test_mmdp_value_iteration(mmdp, 4)
+        greedy = GreedyDuoAgent(0, task)
+        result_greedy = run(greedy, task)
 
-    def test_garbage_collection_mmdp_value_iteration(self):
-        mmdp = GarbageCollectionMMDP(self._adjacency_matrix, self._dirty_nodes, self._movement_failure_probability)
-        self._test_mmdp_value_iteration(mmdp, 6)
+        bopa = BOPA([task])
+        result_bopa = run(bopa, task)
 
-    def _test_mmdp_value_iteration(self, mmdp, optimal_steps):
-        agent = GreedyAgent(mmdp)
-        metric = TimestepsPerEpisodeMetric()
-        terminal = False
-        step = 0
-        while not terminal:
-            state = mmdp.state
-            action = agent.action(state)
-            _, reward, terminal, info = mmdp.step(action)
-            next_state = mmdp.state
-            timestep = Timestep(state, action, reward, next_state, terminal, info)
-            agent.reinforcement(timestep)
-            metric(timestep)
-            step += 1
-        assert step <= optimal_steps and len(metric.result()) == 1 and metric.result()[
-            0] == optimal_steps, f"Failed to solve task in at most {optimal_steps} steps (took {metric.result()[0]})"
+        assert result_bopa == result_greedy, f"Greedy solved in {result_greedy} steps while BOPA solved in {result_bopa} steps"
 
+    def test_env_reckon_known_task1(self):
+        self._test_known_task(self._possible_tasks[0])
+
+    def test_env_reckon_known_task2(self):
+        self._test_known_task(self._possible_tasks[1])
+
+    def test_env_reckon_known_task3(self):
+        self._test_known_task(self._possible_tasks[2])
+
+    def _test_env_reckon_bopa_task(self, task_no):
+        task = self._possible_tasks[task_no]
+        bopa = BOPA(self._possible_tasks)
+        result_bopa = run(bopa, task)
+        assert result_bopa <= 10, f"BOPA took more than 10 steps to solve task #{task_no} (took {result_bopa})"
+
+    def test_env_reckon_bopa_task1(self):
+        self._test_env_reckon_bopa_task(0)
+
+    def test_env_reckon_bopa_task2(self):
+        self._test_env_reckon_bopa_task(1)
+
+    def test_env_reckon_bopa_task3(self):
+        self._test_env_reckon_bopa_task(2)
 
 class DuoGridWorldTests(TestCase):
 
-    def test_greedy(self, rows=3, columns=3, goal=(0, 2, 2, 2)):
-        env = PanicButtonsMMDP(rows, columns, goal=goal)
+    def test_greedy(self, n=3, config=1):
+        env = PanicButtonsMMDP(n, "greedy", config)
         agent = GreedyDuoAgent(0, env)
         metric = TimestepsPerEpisodeMetric()
         run_episode(agent, env, [metric])
         steps_to_solve = metric.result()[-1]
         return steps_to_solve
 
-    def test_adhoc_known_task(self, rows=3, columns=3, goal=(0, 2, 2, 2)):
-        greedy_steps = self.test_greedy(rows, columns, goal)
-        env = PanicButtonsMMDP(rows, columns, goal=goal)
+    def test_adhoc_known_task(self, n=3, config=1):
+        greedy_steps = self.test_greedy(n, config)
+        env = PanicButtonsMMDP(n, "greedy", config)
         agent = BOPA([env], 0)
         metric = TimestepsPerEpisodeMetric()
         run_episode(agent, env, [metric])
@@ -88,7 +76,7 @@ class DuoGridWorldTests(TestCase):
         assert greedy_steps == steps_to_solve, f"When knowing the task, ad hoc should solve it in {greedy_steps} steps (got {steps_to_solve})."
 
     def test_top_right_bottom_left(self):
-        self.test_adhoc_known_task(goal=(0, 2, 2, 0))
+        self.test_adhoc_known_task(config=2)
 
     def test_bottom_right_bottom_left(self):
-        self.test_adhoc_known_task(goal=(0, 2, 2, 2))
+        self.test_adhoc_known_task(config=3)

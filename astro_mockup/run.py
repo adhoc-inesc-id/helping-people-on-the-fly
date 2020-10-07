@@ -32,12 +32,16 @@ def receive_order_from_manager(message: String):
     global current_coordinates
 
     if "goto" in order:
+
         _, next_coordinates = order.split(" ")
         new_x, new_y = next_coordinates.split(",")
         new_x, new_y = float(new_x), float(new_y)
         move_astro(new_x, new_y)
-        current_coordinates[0] = new_x
-        current_coordinates[1] = new_y
+
+        x, y = read_current_coordinates()
+        current_coordinates[0] = x
+        current_coordinates[1] = y
+
         message = f"{new_x}, {new_y}"
     else:
         message = ",".join([str(i) for i in current_coordinates])
@@ -47,8 +51,13 @@ def receive_order_from_manager(message: String):
 
 # Step 2
 def move_astro(new_x, new_y):
+    # TODO Miguel
     rospy.loginfo(f"Moving astro to {new_x}, {new_y}")
-    # TODO Miguel Código para enviar movimento ao astro aqui
+
+def read_current_coordinates():
+    # TODO Miguel
+    x, y = 0, 0
+    return x, y
 
 
 # Step 3

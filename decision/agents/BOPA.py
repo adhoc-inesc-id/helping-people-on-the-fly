@@ -3,18 +3,20 @@ from typing import Sequence
 import numpy as np
 from yaaf.policies import deterministic_policy
 
-from agents.backend.agents.Agent import Agent
-from agents.backend.environments.mdp.MultiAgentMarkovDecisionProcess import MultiAgentMarkovDecisionProcess as MMDP
+from agents.Agent import Agent
+from environment.mdp.MultiAgentMarkovDecisionProcess import MultiAgentMarkovDecisionProcess as MMDP
 
 
 class BOPA(Agent):
 
-    def __init__(self, possible_mmdps:Sequence[MMDP], index:int = 0):
+    def __init__(self, possible_mmdps: Sequence[MMDP], index: int = 0):
         super(BOPA, self).__init__("BOPA")
         self._mmdps = possible_mmdps
         self._beliefs = np.ones(len(self._mmdps)) / len(self._mmdps)
         self._q_stars = [mmdp.q_star for mmdp in possible_mmdps]
         self._optimal_policies = [mmdp.pi_star for mmdp in possible_mmdps]
+        self.joint_action_space = [(ja[0], ja[1]) for ja in possible_mmdps[0].joint_action_space]
+        self.num_disjoint_actions = possible_mmdps[0].num_disjoint_actions
         self.index = index
 
     def policy(self, observation):
@@ -23,9 +25,9 @@ class BOPA(Agent):
     def _greedy_policy(self, observation):
         qstar = self._q_stars[0]
         qvalues = qstar[self._mmdps[0].state_index(observation)]
-        greedy_joint_action = self._mmdps[0].action_space[qvalues.argmax()]
+        greedy_joint_action = self.joint_action_space[qvalues.argmax()]
         greedy_action = greedy_joint_action[self.index]
-        return deterministic_policy(greedy_action, self._mmdps[0].num_disjoint_actions)
+        return deterministic_policy(greedy_action, self.num_disjoint_actions)
 
     def _bopa_policy(self, observation):
         num_actions = self._optimal_policies[0].shape[1]
@@ -50,9 +52,9 @@ class BOPA(Agent):
         return losses
 
     def _disjoint_policy(self, policy, mmdp):
-        pi = np.zeros(mmdp.num_disjoint_actions)
+        pi = np.zeros(self.num_disjoint_actions)
         for a, action_probability in enumerate(policy):
-            joint_action = mmdp.action_space[a]
+            joint_action = self.joint_action_space[a]
             action = joint_action[self.index]
             pi[action] += action_probability
         return pi
@@ -66,11 +68,11 @@ class BOPA(Agent):
             x, y = mmdp.state_index(state), mmdp.state_index(next_state)
             Qstar = self._q_stars[m][x]
             greedy_joint_actions = list(np.argwhere(Qstar == np.amax(Qstar)).flatten())
-            greedy_joint_action = [mmdp.action_space[a] for a in greedy_joint_actions]
+            greedy_joint_action = [self.joint_action_space[a] for a in greedy_joint_actions]
             greedy_teammate_actions = [a[1] for a in greedy_joint_action]
             accum = 0.0
             for a_other in greedy_teammate_actions:
-                ja = mmdp.action_space.index((a, a_other))
+                ja = self.joint_action_space.index((a, a_other))
                 P = mmdp.P[ja, x, y]
                 policy = 1.0 / len(greedy_teammate_actions)
                 accum += P * policy

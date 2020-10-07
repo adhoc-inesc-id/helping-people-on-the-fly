@@ -5,8 +5,17 @@ import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
 from yaaf import ndarray_index_from
+from yaaf.agents import RandomAgent
 from yaaf.environments.markov import MarkovDecisionProcess
 
+from agents.GreedyDuoAgent import GreedyDuoAgent
+from agents.SubOptimalAgent import SubOptimalAgent
+
+"""
+DISCLAIMER:
+    This environment class uses the new yaaf, which simplifies the environment interface resorting to the openai gym Env class
+    Panic Buttons MMDP used the old Environment class from an older version of yaaf.
+"""
 
 class EnvironmentReckonMMDP(MarkovDecisionProcess):
 
@@ -18,7 +27,7 @@ class EnvironmentReckonMMDP(MarkovDecisionProcess):
                  min_value_iteration_error: float = 10e-8,
                  initial_state: np.ndarray = np.array([0, 0, 1, 0, 0]),
                  node_meanings: Sequence[str] = ("door", "baxter", "single workbench", "double workbench", "table"),
-                 id="environment-reckon-mmdp-v1"):
+                 id="environment-reckon-mmdp-v1", teammate="greedy"):
 
         self._adjacency_matrix = adjacency_matrix
         self._explorable_nodes = explorable_nodes
@@ -31,13 +40,15 @@ class EnvironmentReckonMMDP(MarkovDecisionProcess):
 
         # Actions
         self.individual_action_meanings = self.generate_action_meanings()
-        self._joint_actions = list(np.array(list(product(range(len(self.individual_action_meanings)), repeat=2))))
-        actions = tuple(range(len(self._joint_actions)))
+        self.num_disjoint_actions = len(self.individual_action_meanings)
+        self.joint_action_space = list(np.array(list(product(range(self.num_disjoint_actions), repeat=2))))
+
+        actions = tuple(range(len(self.joint_action_space)))
         action_meanings = tuple(product(self.individual_action_meanings, repeat=2))
 
         # Transitions
         transition_probabilities = self.generate_transition_probabilities(
-            states, self._joint_actions, adjacency_matrix, explorable_nodes, movement_failure_probability, self.individual_action_meanings
+            states, self.joint_action_space, adjacency_matrix, explorable_nodes, movement_failure_probability, self.individual_action_meanings
         )
 
         # Reward
@@ -52,14 +63,30 @@ class EnvironmentReckonMMDP(MarkovDecisionProcess):
             discount_factor, initial_state_distribution, min_value_iteration_error,
             action_meanings=action_meanings)
 
+        if teammate == "greedy": self.human = GreedyDuoAgent(1, self)
+        elif teammate == "suboptimal": self.human = SubOptimalAgent(1, self)
+        elif teammate == "random": self.human = RandomAgent(self.num_disjoint_actions)
+        else: raise ValueError(f"Invalid teammate type {teammate}. Available teammates: [greedy], [suboptimal] and [random]")
+
+    # Port from old version of yaaf
+    @property
+    def pi_star(self):
+        return self.policy
+
+    @property
+    def q_star(self):
+        return self.q_values
+
+    @property
+    def v(self):
+        return self.values
+
     def step(self, action):
-        next_state, reward, _, info = super().step(action)
+        human_action = self.human.action(self.state)
+        joint_action = self.joint_action(int(action), int(human_action))
+        next_state, reward, _, info = super().step(joint_action)
         is_terminal = reward == 1.0
         return next_state, reward, is_terminal, info
-
-    def joint_step(self, action_robot, action_human):
-        joint_action = self.joint_action(action_robot, action_human)
-        return self.step(joint_action)
 
     def joint_action(self, action_robot, action_human):
         if isinstance(action_robot, int):
@@ -83,19 +110,6 @@ class EnvironmentReckonMMDP(MarkovDecisionProcess):
             for x_human in range(num_nodes)
             for explorable_node_bits in possible_bit_combinations
         ]
-        valid_states = []
-        for x_robot in range(num_nodes):
-            for x_human in range(num_nodes):
-                for x, state in enumerate(states):
-                    if state[0] == x_robot and state[1] == x_human:
-                        explorable_bits = state[num_agents:]
-                        robot_in_explorable = x_robot in explorable_nodes
-                        human_in_explorable = x_human in explorable_nodes
-                        invalid_robot_node_state = robot_in_explorable and explorable_bits[explorable_nodes.index(x_robot)] == 0
-                        invalid_human_node_state = human_in_explorable and explorable_bits[explorable_nodes.index(x_human)] == 0
-                        if not invalid_robot_node_state and not invalid_human_node_state:
-                            valid_states.append(x)
-        states = [states[x] for x in valid_states]
         return states
 
     def generate_action_meanings(self):

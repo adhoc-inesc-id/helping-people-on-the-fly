@@ -1,2 +1,4 @@
-from agents.backend.utils import Timestep
-from agents.backend.metrics.TaskInferenceAnalyzer import TaskInferenceAnalyzer
+from collections import namedtuple
+
+Timestep = namedtuple("Timestep", "t observation action reward next_observation is_terminal info")
+from agents.backend.TaskInferenceAnalyzer import TaskInferenceAnalyzer

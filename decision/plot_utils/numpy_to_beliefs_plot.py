@@ -4,10 +4,11 @@ import yaaf
 from matplotlib.pyplot import close
 from yaaf.visualization import LinePlot
 
+RESOURCES_ROOT = "../../resources"
 
 def beliefs_plot(domain, config, teammate, confidence_level, colors, markers, show):
 
-    directory = f"resources/beliefs/{domain}/{teammate}/{size}/task_{config}/"
+    directory = f"{RESOURCES_ROOT}/beliefs/{domain}/{teammate}/{size}/task_{config}/"
     timesteps = np.inf
 
     for file in yaaf.files(directory):
@@ -35,10 +36,10 @@ def beliefs_plot(domain, config, teammate, confidence_level, colors, markers, sh
     if show:
         plot.show()
     else:
-        yaaf.mkdir(f"resources/belief-plots/{teammate}")
-        yaaf.mkdir(f"resources/belief-plots/pdf/{teammate}")
-        plot.savefig(f"resources/belief-plots/{teammate}/{domain}-{teammate}-{size}-task_{config}.png")
-        plot.savefig(f"resources/belief-plots/pdf/{teammate}/{domain}-{teammate}-{size}-task_{config}.pdf")
+        yaaf.mkdir(f"{RESOURCES_ROOT}/belief-plots/{teammate}")
+        yaaf.mkdir(f"{RESOURCES_ROOT}/belief-plots/pdf/{teammate}")
+        plot.savefig(f"{RESOURCES_ROOT}/belief-plots/{teammate}/{domain}-{teammate}-{size}-task_{config}.png")
+        plot.savefig(f"{RESOURCES_ROOT}/belief-plots/pdf/{teammate}/{domain}-{teammate}-{size}-task_{config}.pdf")
 
     close("all")
 
@@ -55,10 +56,10 @@ if __name__ == '__main__':
     teammates = ("greedy", "suboptimal", "random")
 
     if not show:
-        yaaf.rmdir("../../resources/belief-plots")
-        yaaf.mkdir("../../resources/belief-plots")
-        yaaf.rmdir("../../resources/belief-plots/pdf")
-        yaaf.mkdir("../../resources/belief-plots/pdf")
+        yaaf.rmdir(f"{RESOURCES_ROOT}/belief-plots")
+        yaaf.mkdir(f"{RESOURCES_ROOT}/belief-plots")
+        yaaf.rmdir(f"{RESOURCES_ROOT}/belief-plots/pdf")
+        yaaf.mkdir(f"{RESOURCES_ROOT}/belief-plots/pdf")
 
     for domain in domains:
         print(f"{domain}", flush=True)

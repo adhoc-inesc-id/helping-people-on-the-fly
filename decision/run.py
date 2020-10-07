@@ -2,15 +2,12 @@
 Decision node main
 Python 3
 """
-import time
 
 import rospy
 from std_msgs.msg import String
 from argparse import ArgumentParser
 import numpy as np
-
-from agents.BOPA import BOPA
-from run_full_empirical_evaluation import task_factory
+from yaaf.agents import RandomAgent
 
 
 def send_manager_message(message: String):
@@ -23,8 +20,7 @@ def receive_manager_message(message: String):
     message = message.data
     state = np.array([int(o) for o in message.split(" ")])
     rospy.loginfo(f"Received state from Manager node: {state}")
-    action = 0
-    #action = agent.action(state)
+    action = agent.action(state)
     rospy.loginfo(f"Sending action #{action} to Manager node ({action_meanings[action]})")
     send_manager_message(f"{action}")
 
@@ -32,7 +28,7 @@ def receive_manager_message(message: String):
 def setup_possible_tasks():
 
     n_astro, n_human = 0, 0
-    movement_failure_prob = 0.2
+    movement_failure_prob = 0.0
     goals = (
         [0, 1, 4],
         [2, 3, 4],
@@ -73,8 +69,8 @@ def make_task(nodes_to_explore, n_astro, n_human, movement_failture_probability,
 
 
 def setup_agent(possible_tasks):
-    return BOPA(possible_tasks)
-
+    return RandomAgent(num_actions=possible_tasks[0].num_actions)
+    #return BOPA(possible_tasks)
 
 
 if __name__ == '__main__':

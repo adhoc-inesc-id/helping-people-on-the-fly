@@ -5,19 +5,25 @@ from yaaf.agents import RandomAgent
 
 from agents.GreedyDuoAgent import GreedyDuoAgent
 from agents.SubOptimalAgent import SubOptimalAgent
-from agents.backend.environments.mdp.MarkovDecisionProcess import state_index_from
-from agents.backend.environments.mdp.MultiAgentMarkovDecisionProcess import MultiAgentMarkovDecisionProcess
+from environment.mdp.MarkovDecisionProcess import state_index_from
+from environment.mdp.MultiAgentMarkovDecisionProcess import MultiAgentMarkovDecisionProcess
 
 
 class PanicButtonsMMDP(MultiAgentMarkovDecisionProcess):
 
-    def __init__(self, rows=3, columns=3, initial_position=(0, 0, 0, 1), goal=(0, 2, 2, 2), teammate="greedy", render=False, P=None, R=None):
+    def __init__(self, n, teammate, config, render=False):
+
+        initial_position = (0, 0, n-1, 0)
+        if config == 1: panic_location = [0, n-1, n-1, n-1]
+        elif config == 2: panic_location = [int((n-1) / 2), n-1, n-1, 0]
+        elif config == 3: panic_location = [0, 0, int((n-1) / 2), n-1]
+        else: raise ValueError("Invalid config (pick 1, 2 or 3)")
 
         num_teammates = 1
-        self.rows = rows
-        self.columns = columns
+        self.rows = n
+        self.columns = n
         self.initial_position = initial_position
-        self.goal = goal
+        self.goal = panic_location
         self.teammate = teammate
 
         action_descriptions = ("Stay", "Right", "Left", "Down", "Up")
@@ -25,29 +31,18 @@ class PanicButtonsMMDP(MultiAgentMarkovDecisionProcess):
         self.action_meanings = action_descriptions
         disjoint_action_space = tuple(range(len(action_descriptions)))
         joint_action_space = self._setup_joint_action_space(num_agents=2, disjoint_action_space=disjoint_action_space)
-
         state_space = self._generate_states()
-
-        transition_probabilities = self._generate_transition_probabilities_matrix(state_space, joint_action_space) if P is None else P
-        if R is None:
-            rewards = self._generate_reward_matrix(state_space, goal)
-        else:
-            rewards = R
-            self.goal_state = np.array(goal)
-
+        transition_probabilities = self._generate_transition_probabilities_matrix(state_space, joint_action_space)
+        rewards = self._generate_reward_matrix(state_space, self.goal)
         super(PanicButtonsMMDP, self).__init__("panic buttons mmdp", num_teammates,
                                                state_space, disjoint_action_space,
                                                transition_probabilities, rewards,
                                                action_descriptions, render)
 
-        if teammate == "greedy":
-            self.add_teammate(GreedyDuoAgent(1, self))
-        elif teammate == "suboptimal":
-            self.add_teammate(SubOptimalAgent(1, self))
-        elif teammate == "random":
-            self.add_teammate(RandomAgent(len(disjoint_action_space)))
-        else:
-            raise ValueError(f"Invalid teammate type {teammate}. Available teammates: [greedy], [suboptimal] and [random]")
+        if teammate == "greedy": self.add_teammate(GreedyDuoAgent(1, self))
+        elif teammate == "suboptimal": self.add_teammate(SubOptimalAgent(1, self))
+        elif teammate == "random": self.add_teammate(RandomAgent(len(disjoint_action_space)))
+        else: raise ValueError(f"Invalid teammate type {teammate}. Available teammates: [greedy], [suboptimal] and [random]")
 
     @property
     def stay(self):
@@ -191,3 +186,8 @@ class PanicButtonsMMDP(MultiAgentMarkovDecisionProcess):
 
     def display_goal(self):
         print(self._draw_state(self.initial_state()))
+
+
+SmallPanicButtons = lambda teammate, config: PanicButtonsMMDP(3, teammate, config)
+MediumPanicButtons = lambda teammate, config: PanicButtonsMMDP(4, teammate, config)
+LargePanicButtons = lambda teammate, config: PanicButtonsMMDP(5, teammate, config)

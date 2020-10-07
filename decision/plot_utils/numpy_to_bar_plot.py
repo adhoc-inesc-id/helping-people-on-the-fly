@@ -6,6 +6,7 @@ import numpy as np
 import yaaf
 from yaaf.visualization import confidence_interval
 
+RESOURCES_ROOT = f"../../resources"
 
 # ######### #
 # Utilities #
@@ -30,10 +31,10 @@ def sizes_bar_plot(domain, config, teammate, agent_names, alias, data, colors, w
     plt.tight_layout()
 
     if not show:
-        yaaf.mkdir("../../resources/plots")
-        yaaf.mkdir("../../resources/plots/pdf")
-        plt.savefig(f"resources/plots/{domain}-{teammate}-task{config}.png")
-        plt.savefig(f"resources/plots/pdf/{domain}-{teammate}-task{config}.png")
+        yaaf.mkdir(f"{RESOURCES_ROOT}/plots")
+        yaaf.mkdir(f"{RESOURCES_ROOT}/plots/pdf")
+        plt.savefig(f"{RESOURCES_ROOT}/plots/{domain}-{teammate}-task{config}.png")
+        plt.savefig(f"{RESOURCES_ROOT}/plots/pdf/{domain}-{teammate}-task{config}.png")
     else:
         plt.title(f"{domain} (Config #{config})\n({teammate} Teammate)")
         plt.show()
@@ -46,7 +47,7 @@ def load_results(domain, teammate, config, agent_names, confidence_level):
     data["num_states"] = {}
 
     for size in ("small", "medium", "large"):
-        with open(f"resources/results/{domain}/{teammate}/{size}/num_states.txt", "r") as file:
+        with open(f"{RESOURCES_ROOT}/results/{domain}/{teammate}/{size}/num_states.txt", "r") as file:
             lines = file.readlines()
             num_states = int(lines[0].replace("\n", ""))
             data["num_states"][size] = f"{size.capitalize()}\n({num_states} states)"
@@ -60,16 +61,16 @@ def load_results(domain, teammate, config, agent_names, confidence_level):
 
         for size in ("small", "medium", "large"):
 
-            files = yaaf.files(f"resources/results/{domain}/{teammate}/{size}/task_{config}/{agent_name}")
+            files = yaaf.files(f"{RESOURCES_ROOT}/results/{domain}/{teammate}/{size}/task_{config}/{agent_name}")
             result_files = [file for file in files if ".npy" in file]
             results = []
             for file in result_files:
-                result = np.load(f"resources/results/{domain}/{teammate}/{size}/task_{config}/{agent_name}/{file}")
+                result = np.load(f"{RESOURCES_ROOT}/results/{domain}/{teammate}/{size}/task_{config}/{agent_name}/{file}")
                 if result.shape == (0,):
-                    print(f"resources/results/{domain}/{teammate}/{size}/task_{config}/{agent_name}/{file}")
+                    print(f"{RESOURCES_ROOT}/results/{domain}/{teammate}/{size}/task_{config}/{agent_name}/{file}")
                     logging.warning(f"Corrupt file {domain}/{teammate}/{size}/task_{config}/{agent_name}/{file}, moving to badfiles.")
-                    yaaf.mkdir(f"resources/badfiles/{domain}/{teammate}/{size}/task_{config}/{agent_name}")
-                    shutil.move(f"resources/results/{domain}/{teammate}/{size}/task_{config}/{agent_name}/{file}", f"resources/badfiles/{domain}/{teammate}/{size}/task_{config}/{agent_name}/{file}")
+                    yaaf.mkdir(f"{RESOURCES_ROOT}/badfiles/{domain}/{teammate}/{size}/task_{config}/{agent_name}")
+                    shutil.move(f"{RESOURCES_ROOT}/results/{domain}/{teammate}/{size}/task_{config}/{agent_name}/{file}", f"{RESOURCES_ROOT}/badfiles/{domain}/{teammate}/{size}/task_{config}/{agent_name}/{file}")
                 else:
                     try:
                         results.append(result[0])
@@ -116,8 +117,8 @@ if __name__ == '__main__':
     teammates = ("greedy", "suboptimal", "random")
 
     if not show:
-        yaaf.rmdir("../../resources/plots")
-        yaaf.mkdir("../../resources/plots")
+        yaaf.rmdir(f"{RESOURCES_ROOT}/plots")
+        yaaf.mkdir(f"{RESOURCES_ROOT}/plots")
 
     for domain in domains:
         print(f"{domain}", flush=True)

@@ -1,4 +1,3 @@
-from itertools import product
 from typing import Sequence
 
 import numpy as np
@@ -7,44 +6,25 @@ import matplotlib.pyplot as plt
 from environment.EnvironmentReckonMMDP import EnvironmentReckonMMDP
 
 
+"""
+DISCLAIMER:
+    This environment class uses the new yaaf, which simplifies the environment interface resorting to the openai gym Env class
+    Panic Buttons MMDP used the old Environment class from an older version of yaaf.
+"""
+
 class GarbageCollectionMMDP(EnvironmentReckonMMDP):
 
-    def __init__(self, adjacency_matrix: np.ndarray, explorable_nodes: Sequence[int],
+    def __init__(self, adjacency_matrix: np.ndarray, dirty_nodes: Sequence[int],
                  movement_failure_probability: float, discount_factor: float = 0.90,
                  min_value_iteration_error: float = 10e-8, initial_state: np.ndarray = np.array([0, 0, 0, 0]),
                  node_meanings: Sequence[str] = ("door", "baxter", "single workbench", "double workbench", "table")):
 
-        super().__init__(adjacency_matrix, explorable_nodes, movement_failure_probability, discount_factor,
+        super().__init__(adjacency_matrix, dirty_nodes, movement_failure_probability, discount_factor,
                          min_value_iteration_error, initial_state, node_meanings, "garbage-collection-mmdp-v1")
 
     # ################## #
     # Auxiliary for init #
     # ################## #
-
-    def generate_states(self, adjacency_matrix, dirty_nodes):
-        num_dirty_nodes = len(dirty_nodes)
-        num_nodes = adjacency_matrix.shape[0]
-        num_agents = 2
-        possible_bit_combinations = list(product(range(num_agents), repeat=num_dirty_nodes))
-        states = [
-            np.array([x_robot, x_human, *dirty_bits])
-            for x_robot in range(num_nodes)
-            for x_human in range(num_nodes)
-            for dirty_bits in possible_bit_combinations
-        ]
-        valid_states = []
-        for x_robot in range(num_nodes):
-            for x_human in range(num_nodes):
-                for x, state in enumerate(states):
-                    if state[0] == x_robot and state[1] == x_human:
-                        dirty_bits = state[num_agents:]
-                        robot_in_dirty_node = x_robot in dirty_nodes
-                        human_in_same = x_human == x_robot
-                        invalid_state = robot_in_dirty_node and human_in_same and dirty_bits[dirty_nodes.index(x_robot)] == 0
-                        if not invalid_state :
-                            valid_states.append(x)
-        states = [states[x] for x in valid_states]
-        return states
 
     def generate_transition_probabilities(self, states, joint_actions, adjacency_matrix, dirty_nodes, movement_failure_probability, individual_action_meanings):
         num_joint_actions = len(joint_actions)

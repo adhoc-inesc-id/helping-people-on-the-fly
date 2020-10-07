@@ -8,8 +8,10 @@ from yaaf.evaluation import TimestepsPerEpisodeMetric
 
 from agents.BOPA import BOPA
 from agents.GreedyDuoAgent import GreedyDuoAgent
-from agents.backend import TaskInferenceAnalyzer
-from tasks import SmallPanicButtons, MediumPanicButtons, LargePanicButtons
+from agents.backend import TaskInferenceAnalyzer, Timestep
+
+
+RESOURCES_ROOT = "../resources"
 
 # ######### #
 # Utilities #
@@ -21,9 +23,14 @@ def run(agent, task, observers=None, max_steps=5000):
     task.reset()
     step = 0
     while not terminal:
-        action = agent.action(task.state)
+        state = task.state
+        action = agent.action(state)
         timestep = task.step(action)
-        terminal = timestep.is_terminal
+        try:
+            terminal = timestep.is_terminal
+        except:
+            timestep = Timestep(step, state, action, timestep[1], timestep[0], timestep[2], timestep[3])
+            terminal = timestep.is_terminal
         agent.reinforcement(timestep)
         [observer(timestep) for observer in observers]
         step += 1
@@ -32,7 +39,7 @@ def run(agent, task, observers=None, max_steps=5000):
     return observers[0].result()[0] if step < max_steps else np.array(max_steps)
 
 def fetch_needed_runs(domain, size, teammate, task, agent, N):
-    dir = f"resources/results/{domain}/{teammate}/{size}/task_{task}/{agent}"
+    dir = f"{RESOURCES_ROOT}/results/{domain}/{teammate}/{size}/task_{task}/{agent}"
     try:
         files = yaaf.files(dir)
         num_files = len([file for file in files if ".npy" in file])
@@ -46,10 +53,57 @@ def agent_factory(name, env, tasks):
     elif name == "bopa": return BOPA(tasks, 0)
     else: raise ValueError()
 
-def task_factory(size, teammate):
-    if size == "small": return [SmallPanicButtons(teammate, config) for config in (1, 2, 3)]
-    elif size == "medium": return [MediumPanicButtons(teammate, config) for config in (1, 2, 3)]
-    elif size == "large": return [LargePanicButtons(teammate, config) for config in (1, 2, 3)]
+def task_factory(domain, size, teammate):
+
+    if domain == "panic-buttons":
+
+        from environment import SmallPanicButtons, MediumPanicButtons, LargePanicButtons
+        if size == "small": return [SmallPanicButtons(teammate, config) for config in (1, 2, 3)]
+        elif size == "medium": return [MediumPanicButtons(teammate, config) for config in (1, 2, 3)]
+        elif size == "large": return [LargePanicButtons(teammate, config) for config in (1, 2, 3)]
+
+    elif domain == "gaips":
+
+        from environment import EnvironmentReckonMMDP
+
+        adjacency_matrix = np.array([
+            [0, 1, 0, 0, 0],
+            [1, 0, 1, 1, 0],
+            [0, 1, 0, 0, 0],
+            [0, 1, 0, 0, 1],
+            [0, 0, 0, 1, 0],
+        ])
+        movement_failure_prob = 0.0
+
+        tasks = [
+            EnvironmentReckonMMDP(
+                adjacency_matrix,
+                [0, 1, 4],
+                movement_failure_prob,
+                initial_state=np.array([0, 0, 1, 0, 0]),
+                id="env-reckon-v1",
+                teammate=teammate
+            ),
+            EnvironmentReckonMMDP(
+                adjacency_matrix,
+                [1, 2, 3],
+                movement_failure_prob,
+                initial_state=np.array([0, 0, 0, 0, 0]),
+                id="env-reckon-v2",
+                teammate=teammate
+            ),
+            EnvironmentReckonMMDP(
+                adjacency_matrix,
+                [1, 2, 4],
+                movement_failure_prob,
+                initial_state=np.array([0, 0, 0, 0, 0]),
+                id="env-reckon-v3",
+                teammate=teammate
+            ),
+        ]
+
+        return tasks
+
     else: raise ValueError()
 
 
@@ -60,17 +114,12 @@ def task_factory(size, teammate):
 if __name__ == '__main__':
 
 
-    N = 32
-    domain = "panic buttons"
+    N = 1
+    domain = "gaips"
     agents = ("greedy", "bopa", "random")
-    sizes = ("small", "medium", "large")
     teammates = ("greedy", "suboptimal", "random")
-    """
-    N = 32
-    agents = ("bopa",)
-    sizes = ("small", "medium", "large")
-    teammates = ("greedy", "suboptimal", "random")
-    """
+    sizes = ("small",)
+
 
     print(f"{domain}", flush=True)
     for size in sizes:
@@ -81,7 +130,7 @@ if __name__ == '__main__':
             can_skip = True
             for config in range(1, 4):
                 for agent_name in agents:
-                    yaaf.mkdir(f"resources/results/{domain}/{teammate}/{size}/task_{config}/{agent_name}/")
+                    yaaf.mkdir(f"{RESOURCES_ROOT}/results/{domain}/{teammate}/{size}/task_{config}/{agent_name}/")
                     found, needed = fetch_needed_runs(domain, size, teammate, config, agent_name, N)
                     if needed > 0:
                         can_skip = False
@@ -90,13 +139,13 @@ if __name__ == '__main__':
                     break
             if can_skip:
                 continue
-            tasks = task_factory(size, teammate)
-            yaaf.mkdir(f"resources/results/{domain}/{teammate}/{size}")
-            with open(f"resources/results/{domain}/{teammate}/{size}/num_states.txt", "w") as file: file.write(str(tasks[0].num_states))
+            tasks = task_factory(domain, size, teammate)
+            yaaf.mkdir(f"{RESOURCES_ROOT}/results/{domain}/{teammate}/{size}")
+            with open(f"{RESOURCES_ROOT}/results/{domain}/{teammate}/{size}/num_states.txt", "w") as file: file.write(str(tasks[0].num_states))
             for t, env in enumerate(tasks):
                 config = t + 1
                 for agent_name in agents:
-                    yaaf.mkdir(f"resources/results/{domain}/{teammate}/{size}/task_{config}/{agent_name}/")
+                    yaaf.mkdir(f"{RESOURCES_ROOT}/results/{domain}/{teammate}/{size}/task_{config}/{agent_name}/")
                     found, needed = fetch_needed_runs(domain, size, teammate, config, agent_name, N)
                     print(f"{domain} {size} task {config} with {teammate} teammate -> {agent_name} agent (found {found}, needs {needed})", end="", flush=True)
                     for n in range(needed):
@@ -107,10 +156,10 @@ if __name__ == '__main__':
                         else:
                             observers = [metric]
                         result = run(agent_factory(agent_name, env, tasks), env, observers)
-                        np.save(f"resources/results/{domain}/{teammate}/{size}/task_{config}/{agent_name}/{getrandbits(64)}", result)
+                        np.save(f"{RESOURCES_ROOT}/results/{domain}/{teammate}/{size}/task_{config}/{agent_name}/{getrandbits(64)}", result)
                         if agent_name == "bopa":
-                            yaaf.mkdir(f"resources/beliefs/{domain}/{teammate}/{size}/task_{config}/")
-                            np.save(f"resources/beliefs/{domain}/{teammate}/{size}/task_{config}/{getrandbits(64)}", analyzer.result())
+                            yaaf.mkdir(f"{RESOURCES_ROOT}/beliefs/{domain}/{teammate}/{size}/task_{config}/")
+                            np.save(f"{RESOURCES_ROOT}/beliefs/{domain}/{teammate}/{size}/task_{config}/{getrandbits(64)}", analyzer.result())
                     print(f" -> Done", flush=True)
             print(f"{size} {domain} {teammate} teammate done", flush=True)
         end = time.time()
