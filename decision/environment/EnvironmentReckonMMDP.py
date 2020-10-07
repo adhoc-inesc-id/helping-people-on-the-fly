@@ -81,6 +81,10 @@ class EnvironmentReckonMMDP(MarkovDecisionProcess):
     def v(self):
         return self.values
 
+    @property
+    def stay(self):
+        return self.individual_action_meanings.index("stay")
+
     def step(self, action):
         human_action = self.human.action(self.state)
         joint_action = self.joint_action(int(action), int(human_action))
