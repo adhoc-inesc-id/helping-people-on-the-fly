@@ -114,7 +114,7 @@ def task_factory(domain, size, teammate):
 if __name__ == '__main__':
 
 
-    N = 1
+    N = 32
     domain = "gaips"
     agents = ("greedy", "bopa", "random")
     teammates = ("greedy", "suboptimal", "random")
