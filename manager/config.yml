@@ -1,5 +1,6 @@
 node names: ["porta", "baxter", "bancada", "bancada dupla", "mesa"]
 nodes to explore: [0, 1, 4]
+human seconds to move: 5
 
 graph nodes astro points:
     - [0.0, 0.0]

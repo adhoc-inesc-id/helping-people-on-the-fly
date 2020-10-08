@@ -8,6 +8,8 @@ from std_msgs.msg import String
 from argparse import ArgumentParser
 import numpy as np
 
+from agents import Timestep
+
 
 def send_manager_message(message: String):
     manager_publisher.publish(message)
@@ -18,11 +20,24 @@ def receive_manager_message(message: String):
     rospy.loginfo("New Timestep")
     message = message.data
     state = np.array([int(o) for o in message.split(" ")])
-    rospy.loginfo(f"Received state from Manager node: {state}")
-    action = agent.action(state)
-    rospy.loginfo(f"Sending action #{action} to Manager node ({action_meanings[action][0]})")
-    send_manager_message(f"{action}")
 
+    global initial_state, last_state, last_action
+
+    rospy.loginfo(f"Received state from Manager node: {state}")
+    if initial_state:
+        initial_state = False
+    else:
+        timestep = Timestep(None, last_state, last_action, None, state, None, {})
+        rospy.loginfo(f"Running reinforcement on st={last_state}, a={last_action}, st+1={state}")
+        agent.reinforcement(timestep)
+
+    action = agent.action(state)
+
+    last_state = state
+    last_action = action
+
+    rospy.loginfo(f"Sending action {action} to Manager node ({action_meanings[action][0]})")
+    send_manager_message(f"{action}")
 
 def setup_possible_tasks():
 
@@ -91,6 +106,9 @@ if __name__ == '__main__':
 
     rospy.loginfo("Setting up algorithm and auxiliary structures")
 
+    initial_state = True
+    last_state = None
+    last_action = None
     possible_tasks = setup_possible_tasks()
     agent = setup_agent(possible_tasks)
     action_meanings = possible_tasks[0].action_meanings

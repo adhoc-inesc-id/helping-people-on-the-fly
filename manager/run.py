@@ -8,6 +8,7 @@ import rospy
 
 from std_msgs.msg import String
 from argparse import ArgumentParser
+import pyttsx3
 
 import utils.planar_homography as planar_homography
 from utils.cameras import *
@@ -16,6 +17,11 @@ from utils.color_segmentation import ColorSegmentation, detect_blobs_centers_of_
 # ######### #
 # Auxiliary #
 # ######### #
+
+def say_tts(text):
+    rospy.loginfo(f"TTS: {text}")
+    engine.say(text)
+    engine.runAndWait()
 
 def row_index(row, matrix):
     if not isinstance(row, np.ndarray):
@@ -35,7 +41,9 @@ def find_next_node(next_index):
 
 def send_astro_order(order: str):
     rospy.loginfo(f"Sent Astro node order {order}")
+    say_tts("Waiting for Astro to move.")
     astro_publisher.publish(order)
+
 
 def map_astro_order(action: int):
     if "move" in action_meanings[action]:
@@ -112,6 +120,12 @@ def make_current_state(dead_reckoning):
 
     global explored_bits
 
+    say_tts("Sir, you can make your move.")
+    for t in reversed(range(seconds_to_move)):
+        rospy.loginfo(f"{t+1}")
+        time.sleep(1)
+    say_tts("Reading your position")
+
     n_astro = read_astro_node(dead_reckoning)
     n_human = read_human_node()
 
@@ -125,6 +139,9 @@ def make_current_state(dead_reckoning):
 
     state = np.array([n_astro, n_human] + explored_bits)
     rospy.loginfo(f"Successfully built state st: {state}")
+
+    global timesteps
+    timesteps += 1
 
     return state
 
@@ -193,6 +210,11 @@ if __name__ == '__main__':
 
     rospy.loginfo(f"Initializing auxiliary structures")
 
+    # Text-to-speech
+    engine = pyttsx3.init()
+    engine.setProperty("voice", "english-us")
+    engine.setProperty("rate", 150)
+    seconds_to_move = config["human seconds to move"]
     # Environment Reckon Task #
     action_meanings = (
         "move to lower-index node",
@@ -214,6 +236,7 @@ if __name__ == '__main__':
     explored_bits = [1, 0, 0]
     last_known_robot_location = 0
     last_known_human_location = 0
+    timesteps = 0
 
     initial_state = np.array([last_known_robot_location, last_known_human_location] + explored_bits)
 
