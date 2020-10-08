@@ -17,11 +17,9 @@ from color_segmentation import ColorSegmentation, detect_blobs_centers_of_mass
 # ######### #
 
 def row_index(row, matrix):
-
     if not isinstance(row, np.ndarray):
         row = np.array(row)
     possible = np.where(np.all(matrix == row, axis=1))
-
     if len(possible) != 1:
         raise ValueError("Not a valid row in the matrix")
     else:
@@ -66,10 +64,11 @@ def read_astro_node(dead_reckoning):
     global last_known_robot_location
     try:
         n_astro = closest_node(np.array(x, y), graph_node_centers_astro_referential)
+        rospy.loginfo(f"Astro is closest to {places[n_astro]}")
         last_known_robot_location = n_astro
     except ValueError:
         n_astro = last_known_robot_location
-        rospy.loginfo(f"Astro's coordinates {x, y} do not map to any valid known node")
+        rospy.logwarn(f"Astro's coordinates {x, y} do not map to any valid known node. Using last known location ({places[n_astro]})")
 
     return n_astro
 
@@ -77,31 +76,36 @@ def read_human_feet_camera():
 
     # 1 - Take picture using camera (camera object created in main)
     image = camera.take_picture()
+    if image is not None:
+        rospy.loginfo("Successfully took picture")
 
     # 2 - Run color segmentation (also created in main)
     segmented_image = color_segmentation.segmentation(image)
+    rospy.loginfo("Ran color segmentation")
 
     # 3 - Take center of mass from detected feet
-    center = detect_blobs_centers_of_mass(segmented_image)[0]
+    feet = detect_blobs_centers_of_mass(segmented_image)[0]
+    rospy.loginfo(f"Detected feet at {feet}")
 
-    return center
+    return feet
 
 def read_human_node():
 
     # 1 - Access camera and take human's feet location on camera via background
-    feet_center_of_mass = read_human_feet_camera()
-    camera_frame_point = np.array(feet_center_of_mass)
+    feet_on_camera = read_human_feet_camera()
 
     # 2 - Get mapped 2d coordinate via planar homography
-    real_world_point = planar_homography.camera_to_real_world_point(camera_frame_point)
+    feet_on_real_world = planar_homography.camera_to_real_world_point(feet_on_camera)
 
     # 4 - Map real world ground position to correct node
     global last_known_human_location
     try:
-        n_human = closest_node(real_world_point, graph_node_centers_homography_real_world_referential)
+        n_human = closest_node(feet_on_real_world, graph_node_centers_homography_real_world_referential)
+        rospy.loginfo(f"Human is closest to {places[n_human]}")
         last_known_human_location = n_human
     except ValueError:
         n_human = last_known_human_location
+        rospy.logwarn(f"Human's feet {feet_on_real_world} do not map to any valid known node. Using last known location ({places[n_human]})")
 
     return n_human
 
@@ -121,7 +125,7 @@ def make_current_state(dead_reckoning):
         explored_bits[i] = 1
 
     state = np.array([n_astro, n_human] + [explored_bits])
-    rospy.loginfo(f"State: {state}")
+    rospy.loginfo(f"Successfully built state st: {state}")
 
     return state
 
@@ -138,7 +142,7 @@ def request_action_from_decision_node(state: np.ndarray):
 # Step 2
 def receive_decision_node_message(message: String):
 
-    rospy.loginfo("")
+    rospy.loginfo("############")
     rospy.loginfo("New Timestep")
 
     action = int(message.data)
