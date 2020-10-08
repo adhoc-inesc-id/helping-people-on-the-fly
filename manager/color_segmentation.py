@@ -71,16 +71,16 @@ class ColorSegmentation(object):
             pass
 
         print('Initial Segmentation')
-        cv2.namedWindow('segemnted_image')
+        cv2.namedWindow('segmented_image')
         segmented_img = self.segmentation(img, use_mask)
-        cv2.imshow('segemnted_image', segmented_img)
+        cv2.imshow('segmented_image', segmented_img)
 
-        cv2.createTrackbar('Hue_Min', 'segemnted_image', 0, 255, nothing)
-        cv2.createTrackbar('Hue_Max', 'segemnted_image', 0, 255, nothing)
-        cv2.createTrackbar('Saturation_Min', 'segemnted_image', 0, 255, nothing)
-        cv2.createTrackbar('Saturation_Max', 'segemnted_image', 0, 255, nothing)
-        cv2.createTrackbar('Value_Min', 'segemnted_image', 0, 255, nothing)
-        cv2.createTrackbar('Value_Max', 'segemnted_image', 0, 255, nothing)
+        cv2.createTrackbar('Hue_Min', 'segmented_image', 0, 255, nothing)
+        cv2.createTrackbar('Hue_Max', 'segmented_image', 0, 255, nothing)
+        cv2.createTrackbar('Saturation_Min', 'segmented_image', 0, 255, nothing)
+        cv2.createTrackbar('Saturation_Max', 'segmented_image', 0, 255, nothing)
+        cv2.createTrackbar('Value_Min', 'segmented_image', 0, 255, nothing)
+        cv2.createTrackbar('Value_Max', 'segmented_image', 0, 255, nothing)
 
         while True:
 
@@ -92,12 +92,12 @@ class ColorSegmentation(object):
 
             print('Update segmentation values')
             # get current positions of four trackbars
-            hue_min = cv2.getTrackbarPos('Hue_Min', 'segemnted_image')
-            hue_max = cv2.getTrackbarPos('Hue_Max', 'segemnted_image')
-            saturation_min = cv2.getTrackbarPos('Saturation_Min', 'segemnted_image')
-            saturation_max = cv2.getTrackbarPos('Saturation_Max', 'segemnted_image')
-            value_min = cv2.getTrackbarPos('Value_Min', 'segemnted_image')
-            value_max = cv2.getTrackbarPos('Value_Max', 'segemnted_image')
+            hue_min = cv2.getTrackbarPos('Hue_Min', 'segmented_image')
+            hue_max = cv2.getTrackbarPos('Hue_Max', 'segmented_image')
+            saturation_min = cv2.getTrackbarPos('Saturation_Min', 'segmented_image')
+            saturation_max = cv2.getTrackbarPos('Saturation_Max', 'segmented_image')
+            value_min = cv2.getTrackbarPos('Value_Min', 'segmented_image')
+            value_max = cv2.getTrackbarPos('Value_Max', 'segmented_image')
 
             print('Updating segmentation')
             if hue_max > hue_min:
@@ -109,7 +109,9 @@ class ColorSegmentation(object):
 
             segmented_img = self.segmentation(img, use_mask)
 
-            cv2.imshow('segemnted_image', segmented_img)
+            cv2.imshow('segmented_image', segmented_img)
+
+        cv2.destroyAllWindows()
 
     def stream_segmentation_config(self, cam, img_counter, use_mask=False):
 
@@ -158,12 +160,12 @@ class ColorSegmentation(object):
 
             print('Update segmentation values')
             # get current positions of four trackbars
-            hue_min = cv2.getTrackbarPos('Hue_Min', 'segemnted_image')
-            hue_max = cv2.getTrackbarPos('Hue_Max', 'segemnted_image')
-            saturation_min = cv2.getTrackbarPos('Saturation_Min', 'segemnted_image')
-            saturation_max = cv2.getTrackbarPos('Saturation_Max', 'segemnted_image')
-            value_min = cv2.getTrackbarPos('Value_Min', 'segemnted_image')
-            value_max = cv2.getTrackbarPos('Value_Max', 'segemnted_image')
+            hue_min = cv2.getTrackbarPos('Hue_Min', 'segmented_image')
+            hue_max = cv2.getTrackbarPos('Hue_Max', 'segmented_image')
+            saturation_min = cv2.getTrackbarPos('Saturation_Min', 'segmented_image')
+            saturation_max = cv2.getTrackbarPos('Saturation_Max', 'segmented_image')
+            value_min = cv2.getTrackbarPos('Value_Min', 'segmented_image')
+            value_max = cv2.getTrackbarPos('Value_Max', 'segmented_image')
 
             print('Updating segmentation')
             if hue_max > hue_min:
@@ -176,18 +178,16 @@ class ColorSegmentation(object):
             segmented_img = self.segmentation(img, use_mask)
 
             cv2.imshow('segmented_image', segmented_img)
+        cv2.destroyAllWindows()
 
     @staticmethod
     def find_segmented_centers(segmented_img, mode='averaging', max_contours=2):
 
-        # convert the image to grayscale
-        gray_image = cv2.cvtColor(segmented_img, cv2.COLOR_BGR2GRAY)
-
         # convert the grayscale image to binary image
-        ret, thresh = cv2.threshold(gray_image, 127, 255, 0)
+        ret, thresh = cv2.threshold(segmented_img, 127, 255, 0)
 
         # find contours in the binary image
-        im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         centers = []
         contours_areas = []
         for c in contours:
@@ -208,75 +208,92 @@ class ColorSegmentation(object):
             centers += [(cX, cY)]
             contours_areas += [area]
 
-        # to find the center of mass of the feet
-        if mode.find('averaging') != 0:
+        if len(centers) > 0:
+            # to find the center of mass of the feet
+            if mode.find('averaging') != -1:
 
-            largest_areas = []
-            # find the contours for the feet
-            for i in range(len(contours_areas)):
-                n_areas = len(largest_areas)
-                current_area = contours_areas[i]
-                if n_areas == 0:
-                    largest_areas += [(i, current_area)]
+                largest_areas = []
+                # find the contours for the feet
+                for i in range(len(contours_areas)):
+                    n_areas = len(largest_areas)
+                    current_area = contours_areas[i]
+                    if n_areas == 0:
+                        largest_areas += [(i, current_area)]
 
-                elif n_areas < max_contours:
-                    j = 0
-                    while j < n_areas:
-                        if current_area > largest_areas[j][1]:
-                            largest_areas = largest_areas[:j] + [(i, current_area)] + largest_areas[j:]
-                            break
-                        j += 1
-                    if j == n_areas:
-                        largest_areas = largest_areas[:j] + [(i, current_area)]
+                    elif n_areas < max_contours:
+                        j = 0
+                        while j < n_areas:
+                            if current_area > largest_areas[j][1]:
+                                largest_areas = largest_areas[:j] + [(i, current_area)] + largest_areas[j:]
+                                break
+                            j += 1
+                        if j == n_areas:
+                            largest_areas = largest_areas[:j] + [(i, current_area)]
 
-                else:
-                    j = 0
-                    while j < n_areas:
-                        if current_area > largest_areas[j][1]:
-                            largest_areas = largest_areas[:j] + [(i, current_area)] + largest_areas[j:-1]
-                            break
-                        j += 1
+                    else:
+                        j = 0
+                        while j < n_areas:
+                            if current_area > largest_areas[j][1]:
+                                largest_areas = largest_areas[:j] + [(i, current_area)] + largest_areas[j:-1]
+                                break
+                            j += 1
 
-            avg_cX, avg_cY = 0, 0
-            for area_t in largest_areas:
-                center = centers[area_t[0]]
-                avg_cX += center[0]
-                avg_cY += center[1]
-            avg_cX, avg_cY = avg_cX/len(largest_areas), avg_cY/len(largest_areas)
+                avg_cX, avg_cY = 0, 0
+                for area_t in largest_areas:
+                    center = centers[area_t[0]]
+                    avg_cX += center[0]
+                    avg_cY += center[1]
+                avg_cX, avg_cY = avg_cX/len(largest_areas), avg_cY/len(largest_areas)
 
-            return avg_cX, avg_cY
+                return avg_cX, avg_cY
 
-        # retrieves only the center of mass of biggest body
-        elif mode.find('single') != 0:
-            largest_contour = 0
-            largest_area = 0
-            for i in range(len(contours_areas)):
-                current_area = contours_areas[i]
-                if current_area > largest_area:
-                    largest_contour = i
+            # retrieves only the center of mass of biggest body
+            elif mode.find('single') != -1:
+                largest_contour = 0
+                largest_area = 0
+                for i in range(len(contours_areas)):
+                    current_area = contours_areas[i]
+                    if current_area > largest_area:
+                        largest_contour = i
 
-            return centers[largest_contour][0], centers[largest_contour][1]
+                return centers[largest_contour][0], centers[largest_contour][1]
 
+            else:
+                print('Invalid center of mass retrieving mode')
+                return 0, 0
         else:
-            print('Invalid center of mass retrieving mode')
+            return 0, 0
 
 
 def test_offline(imgpath, scale=1.0):
 
     color_seg = ColorSegmentation()
     img = cv2.imread(imgpath)
-    color_seg.still_segmentation_config(img)
+    cv2.namedWindow("orig_image")
     width = int(img.shape[1] * scale)
     height = int(img.shape[0] * scale)
     img = cv2.resize(img, (width, height), interpolation=cv2.INTER_AREA)
+    cv2.imshow("orig_image", img)
+    color_seg.still_segmentation_config(img)
 
-    cv2.namedWindow("video")
-    cv2.namedWindow('segmented_image')
+    if cv2.getWindowProperty('orig_image', cv2.WND_PROP_VISIBLE) != 1.0:
+        cv2.namedWindow("orig_image")
+    if cv2.getWindowProperty('segmented_image', cv2.WND_PROP_VISIBLE) != 1.0:
+        cv2.namedWindow('segmented_image')
 
     while True:
-        cv2.imshow("video", img)
+
+        k = cv2.waitKey(1) & 0xFF
+        if k % 256 == 27:
+            # ESC pressed
+            print("Escape hit, closing...")
+            break
+
+        cv2.imshow("orig_image", img)
         segmented_img = color_seg.segmentation(img)
         cv2.imshow('segmented_image', segmented_img)
+
+    cv2.destroyAllWindows()
 
 
 def test_online():
@@ -293,24 +310,32 @@ def test_online():
 
     if cv2.getWindowProperty('video', cv2.WND_PROP_VISIBLE) != 1.0:
         cv2.namedWindow("video")
-    if cv2.getWindowProperty('segemnted_image', cv2.WND_PROP_VISIBLE) != 1.0:
-        cv2.namedWindow('segemnted_image')
+    if cv2.getWindowProperty('segmented_image', cv2.WND_PROP_VISIBLE) != 1.0:
+        cv2.namedWindow('segmented_image')
 
     while True:
-
         print('Get new frame')
         ret, img = cam.read()
         if not ret:
             print("failed to grab frame")
             break
-        cv2.imshow("video", img)
 
         segmented_img = color_seg.segmentation(img)
+        center_of_mass = color_seg.find_segmented_centers(segmented_img, 'averaging')
+        cv2.circle(img, (int(center_of_mass[0]), int(center_of_mass[1])), 7, (255, 255, 255), -1)
 
+        cv2.imshow("video", img)
         cv2.imshow('segmented_image', segmented_img)
+
+        k = cv2.waitKey(1) & 0xFF
+        if k % 256 == 27:
+            # ESC pressed
+            print("Escape hit, closing...")
+            break
 
     cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
-    test_offline("shoes_far1.jpeg", 0.2)
+    #test_offline("../resources/images/shoes_far1.jpeg", 0.5)
+    test_online()
