@@ -36,7 +36,7 @@ class BOPA(Agent):
         for a in range(num_actions):
             pi_mmdps_actions = np.array([pi[x][a] for pi in self._optimal_policies])
             shared_policy[a] = pi_mmdps_actions.dot(self._beliefs)
-        individual_policy = self._disjoint_policy(shared_policy, self._mmdps[0])
+        individual_policy = self._disjoint_policy(shared_policy)
         return individual_policy
 
     def loss(self, observation):
@@ -51,7 +51,7 @@ class BOPA(Agent):
                 losses[m, a] = V[x] - Q[x, a]
         return losses
 
-    def _disjoint_policy(self, policy, mmdp):
+    def _disjoint_policy(self, policy):
         pi = np.zeros(self.num_disjoint_actions)
         for a, action_probability in enumerate(policy):
             joint_action = self.joint_action_space[a]
@@ -84,10 +84,29 @@ class BOPA(Agent):
         # TODO - Add to info
         return info
 
-    def _greedy_reinforce(self, timestep):
+    def _greedy_reinforce(self):
         self._beliefs = np.ones(len(self._mmdps)) / len(self._mmdps)
         info = {f"MMDP #{i}'s Likelihood": prob for i, prob in enumerate(self._beliefs)}
         return info
 
     def _reinforce(self, timestep):
-        return self._greedy_reinforce(timestep) if len(self._mmdps) == 1 else self._bopa_reinforce(timestep)
+        return self._greedy_reinforce() if len(self._mmdps) == 1 else self._bopa_reinforce(timestep)
+
+class TaskInferenceAnalyzer:
+
+    def __init__(self):
+        self.name = "Task Inference Analyzer"
+
+    def reset(self):
+        del self._belief_history
+
+    def result(self):
+        return np.array(self._belief_history)
+
+    def __call__(self, timestep):
+        agent_info = timestep.info["agent"]
+        num_possible_tasks = len(agent_info.keys())
+        if not hasattr(self, "_belief_history"):
+            self._belief_history = [[1/num_possible_tasks for _ in range(num_possible_tasks)]]
+        beliefs = [agent_info[f"MMDP #{i}'s Likelihood"] for i in range(num_possible_tasks)]
+        self._belief_history.append(beliefs)
