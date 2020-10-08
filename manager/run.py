@@ -260,9 +260,11 @@ if __name__ == '__main__':
     # Run #
     # ### #
 
-    time.sleep(2)
+    for t in reversed(range(5)):
+        rospy.loginfo(f"Starting in {t+1}")
+        time.sleep(1)
 
-    rospy.loginfo("Ready")
+    rospy.loginfo("Starting")
 
     rate = rospy.Rate(opt.communication_refresh_rate)
 
