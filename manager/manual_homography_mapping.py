@@ -10,7 +10,7 @@ def callback(event, x, y, flags, param):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-camera_snapshot', default="../resources/sheet_for_homography.jpg")
+    parser.add_argument('-camera_snapshot', default="../resources/images/sheet_for_homography.jpg")
     parser.add_argument('-downscale', type=int, default=20)
     opt = parser.parse_args()
 

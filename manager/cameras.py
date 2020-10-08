@@ -16,7 +16,7 @@ class RealSenseCamera:
     def __del__(self):
         self._cam.stop()
 
-class CV2VideoCaptureCamera:
+class CV2VideoCapture:
     def __init__(self, id):
         self._cam = cv2.VideoCapture(id)
     def take_picture(self):
@@ -31,7 +31,3 @@ class ImageWrapperCamera:
         self._image = cv2.resize(self._image, (width, height), interpolation=cv2.INTER_AREA)
     def take_picture(self):
         return self._image
-
-class VideoWrapperCamera:
-    def __init__(self, path):
-        self._video = cv2.VideoCapture(path)

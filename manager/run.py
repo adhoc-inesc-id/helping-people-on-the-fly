@@ -48,7 +48,6 @@ def map_astro_order(action: int):
     rospy.loginfo(f"Mapped action {action} to order {order}")
     return order
 
-
 def closest_node(point, centers):
     node = None
     smallest = np.inf
@@ -58,7 +57,6 @@ def closest_node(point, centers):
             smallest = distance
             node = n
     return node
-
 
 def read_astro_node(dead_reckoning):
 
@@ -75,7 +73,6 @@ def read_astro_node(dead_reckoning):
 
     return n_astro
 
-
 def read_human_feet_camera():
 
     # 1 - Take picture using camera (camera object created in main)
@@ -88,7 +85,6 @@ def read_human_feet_camera():
     center = detect_blobs_centers_of_mass(segmented_image)[0]
 
     return center
-
 
 def read_human_node():
 
@@ -108,7 +104,6 @@ def read_human_node():
         n_human = last_known_human_location
 
     return n_human
-
 
 def make_current_state(dead_reckoning):
 

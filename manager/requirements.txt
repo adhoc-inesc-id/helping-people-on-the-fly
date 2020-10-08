@@ -2,5 +2,6 @@ yaaf
 networkx
 matplotlib
 numpy
-spacy
 pyttsx3
+pyrealsense2
+imutils
