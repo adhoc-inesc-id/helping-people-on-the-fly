@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from environment import Timestep
+from agents import Timestep
 
 
 class Environment(ABC):

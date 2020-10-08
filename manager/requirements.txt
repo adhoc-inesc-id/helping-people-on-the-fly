@@ -1,4 +1,5 @@
 yaaf
+rospkg
 networkx
 matplotlib
 numpy

@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 from yaaf.policies import sample_action
 
-from environment import Timestep
+from agents import Timestep
 
 
 class Agent(ABC):

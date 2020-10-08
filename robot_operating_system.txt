@@ -1,0 +1,7 @@
+HOSTNAME do PC com ROS:
+
+source activate adhoc
+source /opt/ros/melodic/setup.bash
+export ROS_MASTER_URI=http://Machine:11311/
+export ROS_HOSTNAME=Machine
+export ROS_IP=

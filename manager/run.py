@@ -51,25 +51,23 @@ def closest_node(point, centers):
     node = None
     smallest = np.inf
     for n, center in enumerate(centers):
+        rospy.loginfo(f"Distance between {point} and {center} (node {n})")
         distance = np.linalg.norm((center-point), 2)
         if distance < smallest:
             smallest = distance
             node = n
     return node
 
-def read_astro_node(dead_reckoning):
-
-    x, y = dead_reckoning.split(",")
-    x, y = float(x), float(y)
+def read_astro_node(dead_reckoning_coordinates):
 
     global last_known_robot_location
     try:
-        n_astro = closest_node(np.array(x, y), graph_node_centers_astro_referential)
+        n_astro = closest_node(dead_reckoning_coordinates, graph_node_centers_astro_referential)
         rospy.loginfo(f"Astro is closest to {places[n_astro]}")
         last_known_robot_location = n_astro
     except ValueError:
         n_astro = last_known_robot_location
-        rospy.logwarn(f"Astro's coordinates {x, y} do not map to any valid known node. Using last known location ({places[n_astro]})")
+        rospy.logwarn(f"Astro's coordinates {dead_reckoning_coordinates} do not map to any valid known node. Using last known location ({places[n_astro]})")
 
     return n_astro
 
@@ -125,7 +123,7 @@ def make_current_state(dead_reckoning):
         i = nodes_to_explore.index(n_human)
         explored_bits[i] = 1
 
-    state = np.array([n_astro, n_human] + [explored_bits])
+    state = np.array([n_astro, n_human] + explored_bits)
     rospy.loginfo(f"Successfully built state st: {state}")
 
     return state
@@ -161,7 +159,7 @@ def receive_decision_node_message(message: String):
 # Step 3
 def receive_astro_node_message(message: String):
     data = message.data
-    dead_reckoning = data.split(";")
+    dead_reckoning = np.array([float(i) for i in data.split(",")])
     rospy.loginfo(f"Received Astro node message: '{dead_reckoning};'")
     state = make_current_state(dead_reckoning)
     rospy.loginfo(f"Built state array {state}'")
@@ -220,10 +218,10 @@ if __name__ == '__main__':
     initial_state = np.array([last_known_robot_location, last_known_human_location] + explored_bits)
 
     # Homography
-    graph_node_centers_homography_real_world_referential = np.array(["graph nodes real world points"])
+    graph_node_centers_homography_real_world_referential = np.array(config["graph nodes real world points"])
 
     # Camera
-    camera = ImageWrapperCamera("../resources/shoes_near.jpeg")
+    camera = ImageWrapperCamera("../resources/images/shoes_near.jpeg")
     hue = np.array(config["color segmentation"]["hue"])
     sat = np.array(config["color segmentation"]["sat"])
     val = np.array(config["color segmentation"]["val"])

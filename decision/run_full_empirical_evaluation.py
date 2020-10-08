@@ -8,7 +8,7 @@ from yaaf.evaluation import TimestepsPerEpisodeMetric
 
 from agents.BOPA import BOPA, TaskInferenceAnalyzer
 from agents.GreedyDuoAgent import GreedyDuoAgent
-from environment import Timestep
+from agents import Timestep
 
 
 RESOURCES_ROOT = "../resources"

@@ -8,8 +8,6 @@ from std_msgs.msg import String
 from argparse import ArgumentParser
 import numpy as np
 
-from run_full_empirical_evaluation import task_factory
-
 
 def send_manager_message(message: String):
     manager_publisher.publish(message)
@@ -22,7 +20,7 @@ def receive_manager_message(message: String):
     state = np.array([int(o) for o in message.split(" ")])
     rospy.loginfo(f"Received state from Manager node: {state}")
     action = agent.action(state)
-    rospy.loginfo(f"Sending action #{action} to Manager node ({action_meanings[action]})")
+    rospy.loginfo(f"Sending action #{action} to Manager node ({action_meanings[action][0]})")
     send_manager_message(f"{action}")
 
 

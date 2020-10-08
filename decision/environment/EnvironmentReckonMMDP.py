@@ -8,9 +8,6 @@ from yaaf import ndarray_index_from
 from yaaf.agents import RandomAgent
 from yaaf.environments.markov import MarkovDecisionProcess
 
-from agents.GreedyDuoAgent import GreedyDuoAgent
-from agents.SubOptimalAgent import SubOptimalAgent
-
 """
 DISCLAIMER:
     This environment class uses the new yaaf, which simplifies the environment interface resorting to the openai gym Env class
@@ -63,8 +60,12 @@ class EnvironmentReckonMMDP(MarkovDecisionProcess):
             discount_factor, initial_state_distribution, min_value_iteration_error,
             action_meanings=action_meanings)
 
-        if teammate == "greedy": self.human = GreedyDuoAgent(1, self)
-        elif teammate == "suboptimal": self.human = SubOptimalAgent(1, self)
+        if teammate == "greedy":
+            from agents.GreedyDuoAgent import GreedyDuoAgent
+            self.human = GreedyDuoAgent(1, self)
+        elif teammate == "suboptimal":
+            from agents.SubOptimalAgent import SubOptimalAgent
+            self.human = SubOptimalAgent(1, self)
         elif teammate == "random": self.human = RandomAgent(self.num_disjoint_actions)
         else: raise ValueError(f"Invalid teammate type {teammate}. Available teammates: [greedy], [suboptimal] and [random]")
 
