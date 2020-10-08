@@ -27,7 +27,47 @@ def receive_manager_message(message: String):
 
 
 def setup_possible_tasks():
-    return task_factory("gaips", None, "greedy")
+
+    from environment import EnvironmentReckonMMDP
+
+    teammate = "greedy"
+    adjacency_matrix = np.array([
+        [0, 1, 0, 0, 0],
+        [1, 0, 1, 1, 0],
+        [0, 1, 0, 0, 0],
+        [0, 1, 0, 0, 1],
+        [0, 0, 0, 1, 0],
+    ])
+    movement_failure_prob = 0.0
+
+    tasks = [
+        EnvironmentReckonMMDP(
+            adjacency_matrix,
+            [0, 1, 4],
+            movement_failure_prob,
+            initial_state=np.array([0, 0, 1, 0, 0]),
+            id="env-reckon-v1",
+            teammate=teammate
+        ),
+        EnvironmentReckonMMDP(
+            adjacency_matrix,
+            [1, 2, 3],
+            movement_failure_prob,
+            initial_state=np.array([0, 0, 0, 0, 0]),
+            id="env-reckon-v2",
+            teammate=teammate
+        ),
+        EnvironmentReckonMMDP(
+            adjacency_matrix,
+            [1, 2, 4],
+            movement_failure_prob,
+            initial_state=np.array([0, 0, 0, 0, 0]),
+            id="env-reckon-v3",
+            teammate=teammate
+        ),
+    ]
+
+    return tasks
 
 
 def setup_agent(possible_tasks):

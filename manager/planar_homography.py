@@ -16,8 +16,8 @@ def setup_homography_matrix(load_cached=True):
         import yaml
         with open('config.yml', 'r') as file:
             points = yaml.load(file, Loader=yaml.FullLoader)
-            real_world_points = np.array([points["real world points"]])
-            camera_frame_points = np.array([points["camera frame points"]])
+            real_world_points = np.array([points["homography"]["real world points"]])
+            camera_frame_points = np.array([points["homography"]["camera frame points"]])
             homography_matrix, _ = findHomography(camera_frame_points, real_world_points)
 
     np.save("homography_matrix", homography_matrix)
