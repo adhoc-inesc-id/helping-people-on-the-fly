@@ -181,90 +181,6 @@ class ColorSegmentation(object):
             cv2.imshow('segmented_image', segmented_img)
         cv2.destroyAllWindows()
 
-    @staticmethod
-    def find_segmented_centers(segmented_img, mode='averaging', max_contours=2):
-
-        # convert the grayscale image to binary image
-        ret, thresh = cv2.threshold(segmented_img, 127, 255, 0)
-
-        # find contours in the binary image
-        contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        centers = []
-        contours_areas = []
-        for c in contours:
-            # calculate moments for each contour
-            M = cv2.moments(c)
-            # calculate area for each contour
-            area = cv2.contourArea(c)
-
-            # calculate x,y coordinate of center
-            if M["m00"] != 0:
-                cX = int(M["m10"] / M["m00"])
-                cY = int(M["m01"] / M["m00"])
-
-            else:
-                cX, cY = 0, 0
-
-            # store centers and areas for post-processing
-            centers += [(cX, cY)]
-            contours_areas += [area]
-
-        if len(centers) > 0:
-            # to find the center of mass of the feet
-            if mode.find('averaging') != -1:
-
-                largest_areas = []
-                # find the contours for the feet
-                for i in range(len(contours_areas)):
-                    n_areas = len(largest_areas)
-                    current_area = contours_areas[i]
-                    if n_areas == 0:
-                        largest_areas += [(i, current_area)]
-
-                    elif n_areas < max_contours:
-                        j = 0
-                        while j < n_areas:
-                            if current_area > largest_areas[j][1]:
-                                largest_areas = largest_areas[:j] + [(i, current_area)] + largest_areas[j:]
-                                break
-                            j += 1
-                        if j == n_areas:
-                            largest_areas = largest_areas[:j] + [(i, current_area)]
-
-                    else:
-                        j = 0
-                        while j < n_areas:
-                            if current_area > largest_areas[j][1]:
-                                largest_areas = largest_areas[:j] + [(i, current_area)] + largest_areas[j:-1]
-                                break
-                            j += 1
-
-                avg_cX, avg_cY = 0, 0
-                for area_t in largest_areas:
-                    center = centers[area_t[0]]
-                    avg_cX += center[0]
-                    avg_cY += center[1]
-                avg_cX, avg_cY = avg_cX/len(largest_areas), avg_cY/len(largest_areas)
-
-                return avg_cX, avg_cY
-
-            # retrieves only the center of mass of biggest body
-            elif mode.find('single') != -1:
-                largest_contour = 0
-                largest_area = 0
-                for i in range(len(contours_areas)):
-                    current_area = contours_areas[i]
-                    if current_area > largest_area:
-                        largest_contour = i
-
-                return centers[largest_contour][0], centers[largest_contour][1]
-
-            else:
-                print('Invalid center of mass retrieving mode')
-                return 0, 0
-        else:
-            return 0, 0
-
 
 def test_offline(imgpath, scale=1.0):
 
@@ -352,6 +268,87 @@ def detect_blobs_centers_of_mass(blobbed_image):
             pass
     return centers
 
+
+def find_segmented_centers(segmented_img, mode='averaging', max_contours=2):
+
+    # convert the grayscale image to binary image
+    ret, thresh = cv2.threshold(segmented_img, 127, 255, 0)
+
+    # find contours in the binary image
+    contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    centers = []
+    contours_areas = []
+    for c in contours:
+        # calculate moments for each contour
+        M = cv2.moments(c)
+        # calculate area for each contour
+        area = cv2.contourArea(c)
+        # calculate x,y coordinate of center
+        if M["m00"] != 0:
+            cX = int(M["m10"] / M["m00"])
+            cY = int(M["m01"] / M["m00"])
+        else:
+            cX, cY = 0, 0
+
+        # store centers and areas for post-processing
+        centers += [(cX, cY)]
+        contours_areas += [area]
+
+    if len(centers) > 0:
+        # to find the center of mass of the feet
+        if mode.find('averaging') != -1:
+
+            largest_areas = []
+            # find the contours for the feet
+            for i in range(len(contours_areas)):
+                n_areas = len(largest_areas)
+                current_area = contours_areas[i]
+                if n_areas == 0:
+                    largest_areas += [(i, current_area)]
+
+                elif n_areas < max_contours:
+                    j = 0
+                    while j < n_areas:
+                        if current_area > largest_areas[j][1]:
+                            largest_areas = largest_areas[:j] + [(i, current_area)] + largest_areas[j:]
+                            break
+                        j += 1
+                    if j == n_areas:
+                        largest_areas = largest_areas[:j] + [(i, current_area)]
+
+                else:
+                    j = 0
+                    while j < n_areas:
+                        if current_area > largest_areas[j][1]:
+                            largest_areas = largest_areas[:j] + [(i, current_area)] + largest_areas[j:-1]
+                            break
+                        j += 1
+
+            avg_cX, avg_cY = 0, 0
+            for area_t in largest_areas:
+                center = centers[area_t[0]]
+                avg_cX += center[0]
+                avg_cY += center[1]
+            avg_cX, avg_cY = avg_cX/len(largest_areas), avg_cY/len(largest_areas)
+
+            return int(avg_cX), int(avg_cY)
+
+        # retrieves only the center of mass of biggest body
+        elif mode.find('single') != -1:
+            largest_contour = 0
+            largest_area = 0
+            for i in range(len(contours_areas)):
+                current_area = contours_areas[i]
+                if current_area > largest_area:
+                    largest_contour = i
+
+            return centers[largest_contour][0], centers[largest_contour][1]
+
+        else:
+            print('Invalid center of mass retrieving mode')
+            return 0, 0
+    else:
+        return 0, 0
 
 if __name__ == '__main__':
     # test_offline("../resources/images/shoes_far1.jpeg", 0.5)

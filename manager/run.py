@@ -7,16 +7,14 @@ import time
 import rospy
 from std_msgs.msg import String
 from argparse import ArgumentParser
-import numpy as np
-import cv2
 import planar_homography
 import yaml
+from cameras import *
+from color_segmentation import ColorSegmentation, detect_blobs_centers_of_mass
 
 # ######### #
 # Auxiliary #
 # ######### #
-from color_segmentation import ColorSegmentation, detect_blobs_centers_of_mass
-
 
 def row_index(row, matrix):
 
@@ -43,21 +41,33 @@ def send_astro_order(order: str):
 def map_astro_order(action: int):
     if "move" in action_meanings[action]:
         next_node = find_next_node(action)
-        x, y = dead_reckoning_coordinate_map[next_node]
+        x, y = graph_node_centers_astro_referential[next_node]
         order = f"go to {x}, {y}"
     elif action == 3: order = "stay"
     else: raise ValueError("Should be unreachable - invalid action index")
     rospy.loginfo(f"Mapped action {action} to order {order}")
     return order
 
+
+def closest_node(point, centers):
+    node = None
+    smallest = np.inf
+    for n, center in enumerate(centers):
+        distance = np.linalg.norm((center-point), 2)
+        if distance < smallest:
+            smallest = distance
+            node = n
+    return node
+
+
 def read_astro_node(dead_reckoning):
 
-    x, y, _ = dead_reckoning.split(",")
+    x, y = dead_reckoning.split(",")
     x, y = float(x), float(y)
 
     global last_known_robot_location
     try:
-        n_astro = row_index((x, y), dead_reckoning_coordinate_map)
+        n_astro = closest_node(np.array(x, y), graph_node_centers_astro_referential)
         last_known_robot_location = n_astro
     except ValueError:
         n_astro = last_known_robot_location
@@ -68,26 +78,16 @@ def read_astro_node(dead_reckoning):
 
 def read_human_feet_camera():
 
-    global last_picture
-
     # 1 - Take picture using camera (camera object created in main)
-    ret, img = camera.read()
-    if not ret:
-        rospy.logwarn("Unable to access camera. Using last taken picture.")
-        img = last_picture
-    else: last_picture = img
+    image = camera.take_picture()
 
     # 2 - Run color segmentation (also created in main)
-    segmented_img = color_segmentation.segmentation(img)
+    segmented_image = color_segmentation.segmentation(image)
 
     # 3 - Take center of mass from detected feet
-    centers = detect_blobs_centers_of_mass(segmented_img)
+    center = detect_blobs_centers_of_mass(segmented_image)[0]
 
-    if len(centers) == 1:
-        return centers[0]
-    else:
-        # TODO
-        return centers[0]
+    return center
 
 
 def read_human_node():
@@ -102,7 +102,7 @@ def read_human_node():
     # 4 - Map real world ground position to correct node
     global last_known_human_location
     try:
-        n_human = row_index(real_world_point, homography_coordinate_map)
+        n_human = closest_node(real_world_point, graph_node_centers_homography_real_world_referential)
         last_known_human_location = n_human
     except ValueError:
         n_human = last_known_human_location
@@ -211,7 +211,7 @@ if __name__ == '__main__':
         [0, 0, 0, 1, 0],
     ])
     nodes_to_explore = config["nodes to explore"]
-    dead_reckoning_coordinate_map = np.array(config["graph nodes astro points"])
+    graph_node_centers_astro_referential = np.array(config["graph nodes astro points"])
 
     explored_bits = [1, 0, 0]
     last_known_robot_location = 0
@@ -220,10 +220,10 @@ if __name__ == '__main__':
     initial_state = np.array([last_known_robot_location, last_known_human_location] + explored_bits)
 
     # Homography
-    homography_coordinate_map = np.array(config["homography"]["graph nodes real world points"])
+    graph_node_centers_homography_real_world_referential = np.array(["graph nodes real world points"])
 
     # Camera
-    camera = cv2.VideoCapture(0)
+    camera = ImageWrapperCamera("../resources/shoes_near.jpeg")
     hue = np.array(config["color segmentation"]["hue"])
     sat = np.array(config["color segmentation"]["sat"])
     val = np.array(config["color segmentation"]["val"])

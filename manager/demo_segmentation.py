@@ -9,7 +9,7 @@ from color_segmentation import ColorSegmentation
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-camera_snapshot', default="shoes_far2.jpeg")
+    parser.add_argument('-camera_snapshot', default="../resources/shoes_far2.jpeg")
     parser.add_argument('-downscale', type=int, default=0.2)
     opt = parser.parse_args()
 

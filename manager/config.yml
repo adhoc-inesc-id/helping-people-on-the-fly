@@ -8,18 +8,21 @@ graph nodes astro points:
     - [1.0, 0.0]
     - [0.5, 1.0]
 
+graph nodes real world points:
+  - [0.0, 0.0]
+  - [0.5, 0.5]
+  - [1.0, 1.0]
+  - [1.0, 0.0]
+  - [0.5, 1.0]
+
 homography:
-  graph nodes real world points:
-    - [0.0, 0.0]
-    - [0.5, 0.5]
-    - [1.0, 1.0]
-    - [1.0, 0.0]
-    - [0.5, 1.0]
+
   camera frame points:
     - [146, 347]
     - [282, 202]
     - [518, 227]
     - [477, 405]
+
   real world points:
     - [0, 0]
     - [1, 0]
