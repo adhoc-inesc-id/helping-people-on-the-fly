@@ -45,27 +45,75 @@ class ColorSegmentation(object):
 
     def segmentation(self, img, use_mask=False):
 
+        # Image filtering to remove impurities
         blur = cv2.blur(img, (5, 5))
-
         blur0 = cv2.medianBlur(blur, 5)
-
         blur1 = cv2.GaussianBlur(blur0, (5, 5), 0)
-
         blur2 = cv2.bilateralFilter(blur1, 9, 75, 75)
 
+        # Convert to HSV space to lose dependency on lighting conditions
         hsv_img = cv2.cvtColor(blur2, cv2.COLOR_BGR2HSV)
 
+        # Segment image according to hue, saturation and value bounds defined
         low_thresh = np.array([self._hue[0], self._saturation[0], self._value[0]])
         high_thresh = np.array([self._hue[1], self._saturation[1], self._value[1]])
+        segmented_image = cv2.inRange(hsv_img, low_thresh, high_thresh)
 
-        mask_img = cv2.inRange(hsv_img, low_thresh, high_thresh)
-
+        # If use_mask was given, show only segmented portion of initial image
         if use_mask:
-            mask_img = cv2.bitwise_and(img, img, mask= mask_img)
+            segmented_image = cv2.bitwise_and(img, img, mask=segmented_image)
 
-        return mask_img
+        return segmented_image
 
-    def online_segmentation_config(self, cam, img_counter, use_mask=False):
+    def still_segmentation_config(self, img, use_mask=False):
+
+        def nothing(x):
+            pass
+
+        print('Initial Segmentation')
+        cv2.namedWindow('segemnted_image')
+        segmented_img = self.segmentation(img, use_mask)
+        cv2.imshow('segemnted_image', segmented_img)
+
+        cv2.createTrackbar('Hue_Min', 'segemnted_image', 0, 255, nothing)
+        cv2.createTrackbar('Hue_Max', 'segemnted_image', 0, 255, nothing)
+        cv2.createTrackbar('Saturation_Min', 'segemnted_image', 0, 255, nothing)
+        cv2.createTrackbar('Saturation_Max', 'segemnted_image', 0, 255, nothing)
+        cv2.createTrackbar('Value_Min', 'segemnted_image', 0, 255, nothing)
+        cv2.createTrackbar('Value_Max', 'segemnted_image', 0, 255, nothing)
+
+        while True:
+
+            k = cv2.waitKey(1) & 0xFF
+            if k % 256 == 27:
+                # ESC pressed
+                print("Escape hit, closing...")
+                break
+
+            print('Update segmentation values')
+            # get current positions of four trackbars
+            hue_min = cv2.getTrackbarPos('Hue_Min', 'segemnted_image')
+            hue_max = cv2.getTrackbarPos('Hue_Max', 'segemnted_image')
+            saturation_min = cv2.getTrackbarPos('Saturation_Min', 'segemnted_image')
+            saturation_max = cv2.getTrackbarPos('Saturation_Max', 'segemnted_image')
+            value_min = cv2.getTrackbarPos('Value_Min', 'segemnted_image')
+            value_max = cv2.getTrackbarPos('Value_Max', 'segemnted_image')
+
+            print('Updating segmentation')
+            if hue_max > hue_min:
+                self._hue = np.array([hue_min, hue_max])
+            if saturation_max > saturation_min:
+                self._saturation = np.array([saturation_min, saturation_max])
+            if value_max > value_min:
+                self._value = np.array([value_min, value_max])
+
+            segmented_img = self.segmentation(img, use_mask)
+
+            cv2.imshow('segemnted_image', segmented_img)
+
+        cv2.destroyAllWindows()
+
+    def stream_segmentation_config(self, cam, img_counter, use_mask=False):
 
         def nothing(x):
             pass
@@ -88,9 +136,6 @@ class ColorSegmentation(object):
         cv2.createTrackbar('Saturation_Max', 'segemnted_image', 0, 255, nothing)
         cv2.createTrackbar('Value_Min', 'segemnted_image', 0, 255, nothing)
         cv2.createTrackbar('Value_Max', 'segemnted_image', 0, 255, nothing)
-
-        switch = '0 : OFF \n1 : ON'
-        cv2.createTrackbar(switch, 'segemnted_image', 0, 1, nothing)
 
         while True:
 
@@ -121,22 +166,101 @@ class ColorSegmentation(object):
             saturation_max = cv2.getTrackbarPos('Saturation_Max', 'segemnted_image')
             value_min = cv2.getTrackbarPos('Value_Min', 'segemnted_image')
             value_max = cv2.getTrackbarPos('Value_Max', 'segemnted_image')
-            s = cv2.getTrackbarPos(switch, 'segemnted_image')
 
-            if s == 1:
-                print('Updating segmentation')
-                if hue_max > hue_min:
-                    self._hue = np.array([hue_min, hue_max])
-                if saturation_max > saturation_min:
-                    self._saturation = np.array([saturation_min, saturation_max])
-                if value_max > value_min:
-                    self._value = np.array([value_min, value_max])
+            print('Updating segmentation')
+            if hue_max > hue_min:
+                self._hue = np.array([hue_min, hue_max])
+            if saturation_max > saturation_min:
+                self._saturation = np.array([saturation_min, saturation_max])
+            if value_max > value_min:
+                self._value = np.array([value_min, value_max])
 
             segmented_img = self.segmentation(img, use_mask)
 
             cv2.imshow('segemnted_image', segmented_img)
 
-        cv2.destroyAllWindows()
+    @staticmethod
+    def find_segmented_centers(segmented_img, mode='averaging', max_contours=2):
+
+        # convert the image to grayscale
+        gray_image = cv2.cvtColor(segmented_img, cv2.COLOR_BGR2GRAY)
+
+        # convert the grayscale image to binary image
+        ret, thresh = cv2.threshold(gray_image, 127, 255, 0)
+
+        # find contours in the binary image
+        im2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+        centers = []
+        contours_areas = []
+        for c in contours:
+            # calculate moments for each contour
+            M = cv2.moments(c)
+            # calculate area for each contour
+            area = cv2.contourArea(c)
+
+            # calculate x,y coordinate of center
+            if M["m00"] != 0:
+                cX = int(M["m10"] / M["m00"])
+                cY = int(M["m01"] / M["m00"])
+
+            else:
+                cX, cY = 0, 0
+
+            # store centers and areas for post-processing
+            centers += [(cX, cY)]
+            contours_areas += [area]
+
+        # to find the center of mass of the feet
+        if mode.find('averaging') != 0:
+
+            largest_areas = []
+            # find the contours for the feet
+            for i in range(len(contours_areas)):
+                n_areas = len(largest_areas)
+                current_area = contours_areas[i]
+                if n_areas == 0:
+                    largest_areas += [(i, current_area)]
+
+                elif n_areas < max_contours:
+                    j = 0
+                    while j < n_areas:
+                        if current_area > largest_areas[j][1]:
+                            largest_areas = largest_areas[:j] + [(i, current_area)] + largest_areas[j:]
+                            break
+                        j += 1
+                    if j == n_areas:
+                        largest_areas = largest_areas[:j] + [(i, current_area)]
+
+                else:
+                    j = 0
+                    while j < n_areas:
+                        if current_area > largest_areas[j][1]:
+                            largest_areas = largest_areas[:j] + [(i, current_area)] + largest_areas[j:-1]
+                            break
+                        j += 1
+
+            avg_cX, avg_cY = 0, 0
+            for area_t in largest_areas:
+                center = centers[area_t[0]]
+                avg_cX += center[0]
+                avg_cY += center[1]
+            avg_cX, avg_cY = avg_cX/len(largest_areas), avg_cY/len(largest_areas)
+
+            return avg_cX, avg_cY
+
+        # retrieves only the center of mass of biggest body
+        elif mode.find('single') != 0:
+            largest_contour = 0
+            largest_area = 0
+            for i in range(len(contours_areas)):
+                current_area = contours_areas[i]
+                if current_area > largest_area:
+                    largest_contour = i
+
+            return centers[largest_contour][0], centers[largest_contour][1]
+
+        else:
+            print('Invalid center of mass retrieving mode')
 
 
 def test_online():
@@ -149,10 +273,13 @@ def test_online():
         return
     img_counter = 0
     color_seg = ColorSegmentation()
-    color_seg.online_segmentation_config(cam, img_counter)
+    color_seg.stream_segmentation_config(cam, img_counter)
 
-    cv2.namedWindow("video")
-    cv2.namedWindow('segemnted_image')
+    if cv2.getWindowProperty('video', cv2.WND_PROP_VISIBLE) != 1.0:
+        cv2.namedWindow("video")
+    if cv2.getWindowProperty('segemnted_image', cv2.WND_PROP_VISIBLE) != 1.0:
+        cv2.namedWindow('segemnted_image')
+
     while True:
 
         print('Get new frame')
@@ -165,6 +292,8 @@ def test_online():
         segmented_img = color_seg.segmentation(img)
 
         cv2.imshow('segemnted_image', segmented_img)
+
+    cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
