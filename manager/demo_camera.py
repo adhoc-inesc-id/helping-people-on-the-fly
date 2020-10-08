@@ -1,17 +1,32 @@
+import argparse
+
 import yaml
 from utils.cameras import *
-with open('config.yml', 'r') as file: config = yaml.load(file, Loader=yaml.FullLoader)
-cam = ImageWrapperCamera("../resources/images/shoes_near.jpeg", 0.2)
 
-cv2.namedWindow("Feed")
+if __name__ == '__main__':
 
-while True:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-camera', default="segmentation")
+    parser.add_argument('-picture', default="../resources/images/sheet_for_homography.jpg")
+    parser.add_argument('-downscale', type=int, default=20)
 
-    img = cam.take_picture()
-    cv2.imshow("Feed", img)
+    opt = parser.parse_args()
 
-    k = cv2.waitKey(1) & 0xFF
-    if k % 256 == 27:
-        break
-
-cv2.destroyAllWindows()
+    with open('config.yml', 'r') as file: config = yaml.load(file, Loader=yaml.FullLoader)
+    if opt.camera == "picture":
+        cam = ImageWrapperCamera("../resources/images/shoes_near.jpeg", 0.2)
+    elif opt.camera == "segmentation":
+        hue = np.array(config["color segmentation"]["hue"])
+        sat = np.array(config["color segmentation"]["sat"])
+        val = np.array(config["color segmentation"]["val"])
+        cam = YellowFeetSegmentationCamera(0, hue, sat, val)
+    else:
+        cam = CV2VideoCapture(0)
+    cv2.namedWindow("Feed")
+    while True:
+        img = cam.take_picture()
+        cv2.imshow("Feed", img)
+        k = cv2.waitKey(1) & 0xFF
+        if k % 256 == 27:
+            break
+    cv2.destroyAllWindows()
