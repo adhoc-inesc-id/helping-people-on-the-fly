@@ -8,13 +8,14 @@ import rospy
 from std_msgs.msg import String
 from argparse import ArgumentParser
 import numpy as np
-
+import cv2
 import planar_homography
+import yaml
 
 # ######### #
 # Auxiliary #
 # ######### #
-from color_segmentation import ColorSegmentation
+from color_segmentation import ColorSegmentation, detect_blobs_centers_of_mass
 
 
 def row_index(row, matrix):
@@ -67,18 +68,26 @@ def read_astro_node(dead_reckoning):
 
 def read_human_feet_camera():
 
-    # TODO - Miguel
+    global last_picture
 
     # 1 - Take picture using camera (camera object created in main)
-    img = camera.something()
+    ret, img = camera.read()
+    if not ret:
+        rospy.logwarn("Unable to access camera. Using last taken picture.")
+        img = last_picture
+    else: last_picture = img
 
     # 2 - Run color segmentation (also created in main)
     segmented_img = color_segmentation.segmentation(img)
 
     # 3 - Take center of mass from detected feet
-    x, y = 0, 0
+    centers = detect_blobs_centers_of_mass(segmented_img)
 
-    return x, y
+    if len(centers) == 1:
+        return centers[0]
+    else:
+        # TODO
+        return centers[0]
 
 
 def read_human_node():
@@ -182,19 +191,18 @@ if __name__ == '__main__':
     # Auxiliary #
     # ######### #
 
+    with open('config.yml', 'r') as file: config = yaml.load(file, Loader=yaml.FullLoader)
+
     rospy.loginfo(f"Initializing auxiliary structures")
 
-    # Environment Reckon Task
-    import yaml
-    with open('config.yml', 'r') as file:
-        config = yaml.load(file, Loader=yaml.FullLoader)
+    # Environment Reckon Task #
     action_meanings = (
         "move to lower-index node",
         "move to second-lower-index node",
         "move to third-lower-index node",
         "stay",
     )
-    places = ("porta", "baxter", "bancada", "bancada dupla", "mesa")
+    places = config["node names"]
     adjacency_matrix = np.array([
         [0, 1, 0, 0, 0],
         [1, 0, 1, 1, 0],
@@ -203,16 +211,23 @@ if __name__ == '__main__':
         [0, 0, 0, 1, 0],
     ])
     nodes_to_explore = config["nodes to explore"]
-    explored_bits = [1, 0, 0]
     dead_reckoning_coordinate_map = np.array(config["graph nodes astro points"])
+
+    explored_bits = [1, 0, 0]
+    last_known_robot_location = 0
+    last_known_human_location = 0
+
+    initial_state = np.array([last_known_robot_location, last_known_human_location] + explored_bits)
 
     # Homography
     homography_coordinate_map = np.array(config["homography"]["graph nodes real world points"])
 
     # Camera
-    # FIXME - Miguel
-    camera = None
-    color_segmentation = ColorSegmentation()
+    camera = cv2.VideoCapture(0)
+    hue = np.array(config["color segmentation"]["hue"])
+    sat = np.array(config["color segmentation"]["sat"])
+    val = np.array(config["color segmentation"]["val"])
+    color_segmentation = ColorSegmentation(hue, sat, val)
 
     # ### #
     # ROS #
@@ -245,14 +260,11 @@ if __name__ == '__main__':
     # Run #
     # ### #
 
-    time.sleep(2)
+    for t in reversed(range(5)):
+        rospy.loginfo(f"Starting in {t+1}")
+        time.sleep(1)
 
-    rospy.loginfo("Ready")
-
-    initial_state = np.array([0, 0, 1, 0, 0])
-
-    last_known_robot_location = 0
-    last_known_human_location = 0
+    rospy.loginfo("Starting")
 
     rate = rospy.Rate(opt.communication_refresh_rate)
 

@@ -1,3 +1,4 @@
+import imutils
 import numpy as np
 import cv2
 
@@ -336,6 +337,22 @@ def test_online():
     cv2.destroyAllWindows()
 
 
+def detect_blobs_centers_of_mass(blobbed_image):
+    contours = cv2.findContours(blobbed_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours = imutils.grab_contours(contours)
+    centers = []
+    for contour in contours:
+        try:
+            M = cv2.moments(contour)
+            cX = int(M["m10"] / M["m00"])
+            cY = int(M["m01"] / M["m00"])
+            center = cX, cY
+            centers.append(center)
+        except ZeroDivisionError:
+            pass
+    return centers
+
+
 if __name__ == '__main__':
-    #test_offline("../resources/images/shoes_far1.jpeg", 0.5)
+    # test_offline("../resources/images/shoes_far1.jpeg", 0.5)
     test_online()

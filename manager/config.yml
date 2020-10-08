@@ -1,32 +1,32 @@
+node names: ["porta", "baxter", "bancada", "bancada dupla", "mesa"]
+nodes to explore: [0, 1, 4]
+
 graph nodes astro points:
-    - [0.0, 0.0]  # 0 (Porta)
-    - [0.5, 0.5]  # 1 (Baxter)
-    - [1.0, 1.0]  # 2 (Bancada dupla)
-    - [1.0, 0.0]  # ...
-    - [0.5, 1.0]
-
-nodes to explore:
-  - 0
-  - 1
-  - 4
-
-homography:
-
-  graph nodes real world points:
     - [0.0, 0.0]
     - [0.5, 0.5]
     - [1.0, 1.0]
     - [1.0, 0.0]
     - [0.5, 1.0]
 
+homography:
+  graph nodes real world points:
+    - [0.0, 0.0]
+    - [0.5, 0.5]
+    - [1.0, 1.0]
+    - [1.0, 0.0]
+    - [0.5, 1.0]
   camera frame points:
     - [146, 347]
     - [282, 202]
     - [518, 227]
     - [477, 405]
-
   real world points:
     - [0, 0]
     - [1, 0]
     - [1, 1]
     - [0, 1]
+
+color segmentation:
+  hue: [25, 60]
+  sat: [35, 255]
+  val: [80, 255]
