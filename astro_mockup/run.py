@@ -2,7 +2,6 @@
 Astro Mockup
 Final version will run on Astro (Python2)
 """
-from typing import List
 
 import rospy
 import yaml

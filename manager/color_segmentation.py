@@ -65,6 +65,71 @@ class ColorSegmentation(object):
 
         return mask_img
 
+    def offline_segmentation_config(self, imagepath, img_counter, use_mask=False):
+
+        def nothing(x):
+            pass
+
+        img = cv2.imread(imagepath)
+        print('Get first frame')
+        cv2.imshow("video", img)
+
+        print('Initial Segmentation')
+        cv2.namedWindow('segmented_image')
+        segmented_img = self.segmentation(img, use_mask)
+        cv2.imshow('segmented_image', segmented_img)
+
+        cv2.createTrackbar('Hue_Min', 'segmented_image', 0, 255, nothing)
+        cv2.createTrackbar('Hue_Max', 'segmented_image', 0, 255, nothing)
+        cv2.createTrackbar('Saturation_Min', 'segmented_image', 0, 255, nothing)
+        cv2.createTrackbar('Saturation_Max', 'segmented_image', 0, 255, nothing)
+        cv2.createTrackbar('Value_Min', 'segmented_image', 0, 255, nothing)
+        cv2.createTrackbar('Value_Max', 'segmented_image', 0, 255, nothing)
+
+        switch = '0 : OFF \n1 : ON'
+        cv2.createTrackbar(switch, 'segmented_image', 0, 1, nothing)
+
+        while True:
+
+            k = cv2.waitKey(1) & 0xFF
+            if k % 256 == 27:
+                # ESC pressed
+                print("Escape hit, closing...")
+                break
+            elif k % 256 == 32:
+                # SPACE pressed
+                img_name = "opencv_frame_{}.png".format(img_counter)
+                cv2.imwrite(img_name, img)
+                print("{} written!".format(img_name))
+                img_counter += 1
+
+            cv2.imshow("video", img)
+
+            print('Update segmentation values')
+            # get current positions of four trackbars
+            hue_min = cv2.getTrackbarPos('Hue_Min', 'segmented_image')
+            hue_max = cv2.getTrackbarPos('Hue_Max', 'segmented_image')
+            saturation_min = cv2.getTrackbarPos('Saturation_Min', 'segmented_image')
+            saturation_max = cv2.getTrackbarPos('Saturation_Max', 'segmented_image')
+            value_min = cv2.getTrackbarPos('Value_Min', 'segmented_image')
+            value_max = cv2.getTrackbarPos('Value_Max', 'segmented_image')
+            s = cv2.getTrackbarPos(switch, 'segmented_image')
+
+            if s == 1:
+                print('Updating segmentation')
+                if hue_max > hue_min:
+                    self._hue = np.array([hue_min, hue_max])
+                if saturation_max > saturation_min:
+                    self._saturation = np.array([saturation_min, saturation_max])
+                if value_max > value_min:
+                    self._value = np.array([value_min, value_max])
+
+            segmented_img = self.segmentation(img, use_mask)
+
+            cv2.imshow('segmented_image', segmented_img)
+
+        cv2.destroyAllWindows()
+
     def online_segmentation_config(self, cam, img_counter, use_mask=False):
 
         def nothing(x):
@@ -78,19 +143,19 @@ class ColorSegmentation(object):
         cv2.imshow("video", img)
 
         print('Initial Segmentation')
-        cv2.namedWindow('segemnted_image')
+        cv2.namedWindow('segmented_image')
         segmented_img = self.segmentation(img, use_mask)
-        cv2.imshow('segemnted_image', segmented_img)
+        cv2.imshow('segmented_image', segmented_img)
 
-        cv2.createTrackbar('Hue_Min', 'segemnted_image', 0, 255, nothing)
-        cv2.createTrackbar('Hue_Max', 'segemnted_image', 0, 255, nothing)
-        cv2.createTrackbar('Saturation_Min', 'segemnted_image', 0, 255, nothing)
-        cv2.createTrackbar('Saturation_Max', 'segemnted_image', 0, 255, nothing)
-        cv2.createTrackbar('Value_Min', 'segemnted_image', 0, 255, nothing)
-        cv2.createTrackbar('Value_Max', 'segemnted_image', 0, 255, nothing)
+        cv2.createTrackbar('Hue_Min', 'segmented_image', 0, 255, nothing)
+        cv2.createTrackbar('Hue_Max', 'segmented_image', 0, 255, nothing)
+        cv2.createTrackbar('Saturation_Min', 'segmented_image', 0, 255, nothing)
+        cv2.createTrackbar('Saturation_Max', 'segmented_image', 0, 255, nothing)
+        cv2.createTrackbar('Value_Min', 'segmented_image', 0, 255, nothing)
+        cv2.createTrackbar('Value_Max', 'segmented_image', 0, 255, nothing)
 
         switch = '0 : OFF \n1 : ON'
-        cv2.createTrackbar(switch, 'segemnted_image', 0, 1, nothing)
+        cv2.createTrackbar(switch, 'segmented_image', 0, 1, nothing)
 
         while True:
 
@@ -115,13 +180,13 @@ class ColorSegmentation(object):
 
             print('Update segmentation values')
             # get current positions of four trackbars
-            hue_min = cv2.getTrackbarPos('Hue_Min', 'segemnted_image')
-            hue_max = cv2.getTrackbarPos('Hue_Max', 'segemnted_image')
-            saturation_min = cv2.getTrackbarPos('Saturation_Min', 'segemnted_image')
-            saturation_max = cv2.getTrackbarPos('Saturation_Max', 'segemnted_image')
-            value_min = cv2.getTrackbarPos('Value_Min', 'segemnted_image')
-            value_max = cv2.getTrackbarPos('Value_Max', 'segemnted_image')
-            s = cv2.getTrackbarPos(switch, 'segemnted_image')
+            hue_min = cv2.getTrackbarPos('Hue_Min', 'segmented_image')
+            hue_max = cv2.getTrackbarPos('Hue_Max', 'segmented_image')
+            saturation_min = cv2.getTrackbarPos('Saturation_Min', 'segmented_image')
+            saturation_max = cv2.getTrackbarPos('Saturation_Max', 'segmented_image')
+            value_min = cv2.getTrackbarPos('Value_Min', 'segmented_image')
+            value_max = cv2.getTrackbarPos('Value_Max', 'segmented_image')
+            s = cv2.getTrackbarPos(switch, 'segmented_image')
 
             if s == 1:
                 print('Updating segmentation')
@@ -134,9 +199,24 @@ class ColorSegmentation(object):
 
             segmented_img = self.segmentation(img, use_mask)
 
-            cv2.imshow('segemnted_image', segmented_img)
+            cv2.imshow('segmented_image', segmented_img)
 
         cv2.destroyAllWindows()
+
+def test_offline(imgpath):
+
+    img_counter = 0
+    color_seg = ColorSegmentation()
+    color_seg.offline_segmentation_config(imgpath, img_counter)
+    img = cv2.imread(imgpath)
+
+    cv2.namedWindow("video")
+    cv2.namedWindow('segmented_image')
+    while True:
+        print('Get new frame')
+        cv2.imshow("video", img)
+        segmented_img = color_seg.segmentation(img)
+        cv2.imshow('segmented_image', segmented_img)
 
 
 def test_online():
@@ -152,7 +232,7 @@ def test_online():
     color_seg.online_segmentation_config(cam, img_counter)
 
     cv2.namedWindow("video")
-    cv2.namedWindow('segemnted_image')
+    cv2.namedWindow('segmented_image')
     while True:
 
         print('Get new frame')
@@ -164,8 +244,8 @@ def test_online():
 
         segmented_img = color_seg.segmentation(img)
 
-        cv2.imshow('segemnted_image', segmented_img)
+        cv2.imshow('segmented_image', segmented_img)
 
 
 if __name__ == '__main__':
-    test_online()
+    test_offline("single-foot.png")
