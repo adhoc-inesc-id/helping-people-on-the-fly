@@ -65,12 +65,16 @@ class ColorSegmentation(object):
 
         return mask_img
 
-    def offline_segmentation_config(self, imagepath, img_counter, use_mask=False):
+    def offline_segmentation_config(self, imagepath, scale, img_counter, use_mask=False):
 
         def nothing(x):
             pass
 
         img = cv2.imread(imagepath)
+        width = int(img.shape[1] * scale)
+        height = int(img.shape[0] * scale)
+        img = cv2.resize(img, (width, height), interpolation=cv2.INTER_AREA)
+
         print('Get first frame')
         cv2.imshow("video", img)
 
@@ -203,15 +207,19 @@ class ColorSegmentation(object):
 
         cv2.destroyAllWindows()
 
-def test_offline(imgpath):
+def test_offline(imgpath, scale=1.0):
 
     img_counter = 0
     color_seg = ColorSegmentation()
-    color_seg.offline_segmentation_config(imgpath, img_counter)
+    color_seg.offline_segmentation_config(imgpath, scale, img_counter)
     img = cv2.imread(imgpath)
+    width = int(img.shape[1] * scale)
+    height = int(img.shape[0] * scale)
+    img = cv2.resize(img, (width, height), interpolation=cv2.INTER_AREA)
 
     cv2.namedWindow("video")
     cv2.namedWindow('segmented_image')
+
     while True:
         print('Get new frame')
         cv2.imshow("video", img)
@@ -233,6 +241,7 @@ def test_online():
 
     cv2.namedWindow("video")
     cv2.namedWindow('segmented_image')
+
     while True:
 
         print('Get new frame')
@@ -248,4 +257,4 @@ def test_online():
 
 
 if __name__ == '__main__':
-    test_offline("single-foot.png")
+    test_offline("shoes_far1.jpeg", 0.2)
