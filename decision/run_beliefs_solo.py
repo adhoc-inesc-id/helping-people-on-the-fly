@@ -5,7 +5,7 @@ import numpy as np
 import yaaf
 from yaaf.evaluation import TimestepsPerEpisodeMetric
 
-from agents.backend import TaskInferenceAnalyzer
+from agents.BOPA import TaskInferenceAnalyzer
 from run_full_empirical_evaluation import task_factory, fetch_needed_runs, run, agent_factory
 
 if __name__ == '__main__':

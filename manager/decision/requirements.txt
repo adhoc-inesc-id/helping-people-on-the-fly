@@ -1,4 +1,0 @@
-yaaf
-networkx
-matplotlib
-numpy

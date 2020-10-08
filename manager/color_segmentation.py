@@ -111,8 +111,6 @@ class ColorSegmentation(object):
 
             cv2.imshow('segemnted_image', segmented_img)
 
-        cv2.destroyAllWindows()
-
     def stream_segmentation_config(self, cam, img_counter, use_mask=False):
 
         def nothing(x):
@@ -126,16 +124,16 @@ class ColorSegmentation(object):
         cv2.imshow("video", img)
 
         print('Initial Segmentation')
-        cv2.namedWindow('segemnted_image')
+        cv2.namedWindow('segmented_image')
         segmented_img = self.segmentation(img, use_mask)
-        cv2.imshow('segemnted_image', segmented_img)
+        cv2.imshow('segmented_image', segmented_img)
 
-        cv2.createTrackbar('Hue_Min', 'segemnted_image', 0, 255, nothing)
-        cv2.createTrackbar('Hue_Max', 'segemnted_image', 0, 255, nothing)
-        cv2.createTrackbar('Saturation_Min', 'segemnted_image', 0, 255, nothing)
-        cv2.createTrackbar('Saturation_Max', 'segemnted_image', 0, 255, nothing)
-        cv2.createTrackbar('Value_Min', 'segemnted_image', 0, 255, nothing)
-        cv2.createTrackbar('Value_Max', 'segemnted_image', 0, 255, nothing)
+        cv2.createTrackbar('Hue_Min', 'segmented_image', 0, 255, nothing)
+        cv2.createTrackbar('Hue_Max', 'segmented_image', 0, 255, nothing)
+        cv2.createTrackbar('Saturation_Min', 'segmented_image', 0, 255, nothing)
+        cv2.createTrackbar('Saturation_Max', 'segmented_image', 0, 255, nothing)
+        cv2.createTrackbar('Value_Min', 'segmented_image', 0, 255, nothing)
+        cv2.createTrackbar('Value_Max', 'segmented_image', 0, 255, nothing)
 
         while True:
 
@@ -177,7 +175,7 @@ class ColorSegmentation(object):
 
             segmented_img = self.segmentation(img, use_mask)
 
-            cv2.imshow('segemnted_image', segmented_img)
+            cv2.imshow('segmented_image', segmented_img)
 
     @staticmethod
     def find_segmented_centers(segmented_img, mode='averaging', max_contours=2):
@@ -263,6 +261,24 @@ class ColorSegmentation(object):
             print('Invalid center of mass retrieving mode')
 
 
+def test_offline(imgpath, scale=1.0):
+
+    color_seg = ColorSegmentation()
+    img = cv2.imread(imgpath)
+    color_seg.still_segmentation_config(img)
+    width = int(img.shape[1] * scale)
+    height = int(img.shape[0] * scale)
+    img = cv2.resize(img, (width, height), interpolation=cv2.INTER_AREA)
+
+    cv2.namedWindow("video")
+    cv2.namedWindow('segmented_image')
+
+    while True:
+        cv2.imshow("video", img)
+        segmented_img = color_seg.segmentation(img)
+        cv2.imshow('segmented_image', segmented_img)
+
+
 def test_online():
 
     print('Acquiring Camera')
@@ -291,10 +307,10 @@ def test_online():
 
         segmented_img = color_seg.segmentation(img)
 
-        cv2.imshow('segemnted_image', segmented_img)
+        cv2.imshow('segmented_image', segmented_img)
 
     cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
-    test_online()
+    test_offline("shoes_far1.jpeg", 0.2)

@@ -14,6 +14,8 @@ import planar_homography
 # ######### #
 # Auxiliary #
 # ######### #
+from color_segmentation import ColorSegmentation
+
 
 def row_index(row, matrix):
 
@@ -65,11 +67,15 @@ def read_astro_node(dead_reckoning):
 
 def read_human_feet_camera():
 
-    # TODO - Miguel aqui background subtraction teu
+    # TODO - Miguel
 
-    # 1 - Take picture using camera
+    # 1 - Take picture using camera (camera object created in main)
+    img = camera.something()
 
-    # 2 - Run background subtraction and take x, y of feet in camera coordinates
+    # 2 - Run color segmentation (also created in main)
+    segmented_img = color_segmentation.segmentation(img)
+
+    # 3 - Take center of mass from detected feet
     x, y = 0, 0
 
     return x, y
@@ -172,18 +178,23 @@ if __name__ == '__main__':
 
     rospy.init_node(opt.node_name)
 
+    # ######### #
+    # Auxiliary #
+    # ######### #
+
     rospy.loginfo(f"Initializing auxiliary structures")
 
+    # Environment Reckon Task
+    import yaml
+    with open('config.yml', 'r') as file:
+        config = yaml.load(file, Loader=yaml.FullLoader)
     action_meanings = (
         "move to lower-index node",
         "move to second-lower-index node",
         "move to third-lower-index node",
         "stay",
-        "locate human",
-        "locate robot"
     )
     places = ("porta", "baxter", "bancada", "bancada dupla", "mesa")
-
     adjacency_matrix = np.array([
         [0, 1, 0, 0, 0],
         [1, 0, 1, 1, 0],
@@ -191,15 +202,21 @@ if __name__ == '__main__':
         [0, 1, 0, 0, 1],
         [0, 0, 0, 1, 0],
     ])
-
-    import yaml
-    with open('config.yml', 'r') as file:
-        config = yaml.load(file, Loader=yaml.FullLoader)
-
     nodes_to_explore = config["nodes to explore"]
     explored_bits = [1, 0, 0]
     dead_reckoning_coordinate_map = np.array(config["graph nodes astro points"])
+
+    # Homography
     homography_coordinate_map = np.array(config["homography"]["graph nodes real world points"])
+
+    # Camera
+    # FIXME - Miguel
+    camera = None
+    color_segmentation = ColorSegmentation()
+
+    # ### #
+    # ROS #
+    # ### #
 
     rospy.loginfo(f"Initializing ROS Node {opt.node_name}")
 
