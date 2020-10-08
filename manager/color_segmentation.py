@@ -75,7 +75,6 @@ class ColorSegmentation(object):
         height = int(img.shape[0] * scale)
         img = cv2.resize(img, (width, height), interpolation=cv2.INTER_AREA)
 
-        print('Get first frame')
         cv2.imshow("video", img)
 
         print('Initial Segmentation')
@@ -109,7 +108,6 @@ class ColorSegmentation(object):
 
             cv2.imshow("video", img)
 
-            print('Update segmentation values')
             # get current positions of four trackbars
             hue_min = cv2.getTrackbarPos('Hue_Min', 'segmented_image')
             hue_max = cv2.getTrackbarPos('Hue_Max', 'segmented_image')
@@ -120,7 +118,6 @@ class ColorSegmentation(object):
             s = cv2.getTrackbarPos(switch, 'segmented_image')
 
             if s == 1:
-                print('Updating segmentation')
                 if hue_max > hue_min:
                     self._hue = np.array([hue_min, hue_max])
                 if saturation_max > saturation_min:
@@ -221,7 +218,6 @@ def test_offline(imgpath, scale=1.0):
     cv2.namedWindow('segmented_image')
 
     while True:
-        print('Get new frame')
         cv2.imshow("video", img)
         segmented_img = color_seg.segmentation(img)
         cv2.imshow('segmented_image', segmented_img)
