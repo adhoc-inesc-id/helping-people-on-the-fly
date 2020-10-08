@@ -3,14 +3,15 @@ Manager node main
 Python 3
 """
 import time
-
+import yaml
 import rospy
+
 from std_msgs.msg import String
 from argparse import ArgumentParser
-import planar_homography
-import yaml
-from cameras import *
-from color_segmentation import ColorSegmentation, detect_blobs_centers_of_mass
+
+import utils.planar_homography as planar_homography
+from utils.cameras import *
+from utils.color_segmentation import ColorSegmentation, detect_blobs_centers_of_mass
 
 # ######### #
 # Auxiliary #
