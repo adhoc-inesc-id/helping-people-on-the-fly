@@ -176,7 +176,7 @@ def receive_decision_node_message(message: String):
 def receive_astro_node_message(message: String):
     data = message.data
     dead_reckoning = np.array([float(i) for i in data.split(",")])
-    rospy.loginfo(f"Received Astro node message: '{dead_reckoning};'")
+    rospy.loginfo(f"Received Astro node message: '{dead_reckoning}'")
     state = make_current_state(dead_reckoning)
     rospy.loginfo(f"Built state array {state}'")
     request_action_from_decision_node(state)

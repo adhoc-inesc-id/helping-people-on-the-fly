@@ -9,7 +9,6 @@ graph nodes astro points:
   - [3.10, 0.29]
   - [3.48, 1.286]
 
-
 graph nodes camera points:
   - [295, 527]
   - [587, 357]
