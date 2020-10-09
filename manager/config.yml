@@ -19,16 +19,20 @@ graph nodes real world points:
 homography:
 
   camera frame points:
-    - [146, 347]
-    - [282, 202]
-    - [518, 227]
-    - [477, 405]
+  - [82, 339]
+  - [105, 545]
+  - [367, 274]
+  - [446, 446]
+  - [611, 225]
+  - [709, 372]
 
   real world points:
     - [0, 0]
+    - [0, 1]
     - [1, 0]
     - [1, 1]
-    - [0, 1]
+    - [2, 0]
+    - [2, 1]
 
 color segmentation:
   hue: [25, 60]

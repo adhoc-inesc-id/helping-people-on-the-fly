@@ -2,6 +2,8 @@ import argparse
 
 import cv2
 
+from utils.cameras import RealSenseCamera
+
 
 def callback(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDOWN:
@@ -10,20 +12,19 @@ def callback(event, x, y, flags, param):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-camera_snapshot', default="../resources/images/sheet_for_homography.jpg")
-    parser.add_argument('-downscale', type=int, default=20)
+    parser.add_argument('-downscale', type=int, default=1)
     opt = parser.parse_args()
 
-    cv2.namedWindow('image')
-    cv2.setMouseCallback('image', callback)
+    cv2.namedWindow('Image')
+    cv2.setMouseCallback('Image', callback)
 
-    image = cv2.imread(opt.camera_snapshot)
-    width = int(image.shape[1] * opt.downscale / 100)
-    height = int(image.shape[0] * opt.downscale / 100)
-    image = cv2.resize(image, (width, height), interpolation = cv2.INTER_AREA)
+    image = RealSenseCamera().take_picture()
+    width = int(image.shape[1] * opt.downscale)
+    height = int(image.shape[0] * opt.downscale)
+    image = cv2.resize(image, (width, height), interpolation=cv2.INTER_AREA)
 
     print("camera frame points:")
-    while(1):
+    while True:
         cv2.imshow('image', image)
         k = cv2.waitKey(20) & 0xFF
         if k == 27:

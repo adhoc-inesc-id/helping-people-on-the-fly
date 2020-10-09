@@ -1,5 +1,6 @@
 import argparse
 
+from utils.cameras import RealSenseCamera
 from utils.planar_homography import camera_to_real_world_point
 import numpy as np
 import cv2
@@ -16,17 +17,16 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-camera_snapshot', default="../resources/images/sheet_for_homography.jpg")
-    parser.add_argument('-downscale', type=int, default=20)
+    parser.add_argument('-downscale', type=int, default=1.0)
     opt = parser.parse_args()
 
     cv2.namedWindow('image')
     cv2.setMouseCallback('image', callback)
 
-    print("Para mostar os pontos no referêncial real, basta clicar no ecrã. Os valores estão a ser arredondados a uma décima.")
-
-    image = cv2.imread(opt.camera_snapshot)
-    width = int(image.shape[1] * opt.downscale / 100)
-    height = int(image.shape[0] * opt.downscale / 100)
+    camera = RealSenseCamera()
+    image = camera.take_picture()
+    width = int(image.shape[1] * opt.downscale)
+    height = int(image.shape[0] * opt.downscale)
     image = cv2.resize(image, (width, height), interpolation=cv2.INTER_AREA)
 
     while (1):
