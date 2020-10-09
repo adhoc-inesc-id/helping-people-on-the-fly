@@ -55,7 +55,7 @@ def move_astro(new_x, new_y):
 
 def read_current_coordinates():
     # TODO Miguel
-    x, y = 0, 0
+    x, y = graph_node_centers_astro_referential[0]
     return x, y
 
 
@@ -86,6 +86,10 @@ if __name__ == '__main__':
 
     with open('config.yml') as f:
         config = yaml.load(f.read(), yaml.FullLoader)
+
+    import numpy as np
+
+    graph_node_centers_astro_referential = np.array(config["graph nodes astro points"])
 
     if opt.tts:
         tts_engine = pyttsx3.init()

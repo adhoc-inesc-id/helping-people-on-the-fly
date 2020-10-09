@@ -19,7 +19,9 @@ if __name__ == '__main__':
         hue = np.array(config["color segmentation"]["hue"])
         sat = np.array(config["color segmentation"]["sat"])
         val = np.array(config["color segmentation"]["val"])
-        cam = YellowFeetSegmentationCamera(0, hue, sat, val)
+        cam = YellowFeetSegmentationCamera(-1, hue, sat, val)
+    elif opt.camera == "realsense":
+        cam = RealSenseCamera()
     else:
         cam = CV2VideoCapture(0)
     cv2.namedWindow("Feed")

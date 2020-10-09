@@ -41,14 +41,17 @@ class ImageWrapperCamera:
     def take_picture(self):
         return self._image
 
-class YellowFeetSegmentationCamera(CV2VideoCapture):
+class YellowFeetSegmentationCamera:
 
     def __init__(self, id, hue, sat, val):
-        super().__init__(id)
+        if id == -1:
+            self._cam = RealSenseCamera()
+        else:
+            self._cam = CV2VideoCapture(id)
         self._segmentation = ColorSegmentation(hue, sat, val)
 
     def take_picture(self):
-        image = super(YellowFeetSegmentationCamera, self).take_picture()
+        image = self._cam.take_picture()
         segmented_image = self._segmentation.segmentation(image)
         center = find_segmented_centers(segmented_image)
         return cv2.circle(image.copy(), center, 20, (0, 0, 255), thickness=3)

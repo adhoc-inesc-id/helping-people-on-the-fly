@@ -15,8 +15,8 @@ if __name__ == '__main__':
     parser.add_argument('-downscale', type=int, default=1)
     opt = parser.parse_args()
 
-    cv2.namedWindow('Image')
-    cv2.setMouseCallback('Image', callback)
+    cv2.namedWindow('image')
+    cv2.setMouseCallback('image', callback)
 
     image = RealSenseCamera().take_picture()
     width = int(image.shape[1] * opt.downscale)

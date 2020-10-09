@@ -120,7 +120,7 @@ class ColorSegmentation(object):
             pass
 
         print('Get first frame')
-        ret, img = cam.read()
+        ret, img = 1, cam.take_picture()
         if not ret:
             print("failed to grab frame")
             return
@@ -153,7 +153,7 @@ class ColorSegmentation(object):
                 img_counter += 1
 
             print('Get new frame')
-            ret, img = cam.read()
+            ret, img = 1, cam.take_picture()
             if not ret:
                 print("failed to grab frame")
                 break
@@ -216,29 +216,31 @@ def test_offline(imgpath, scale=1.0):
 def test_online():
 
     print('Acquiring Camera')
-    cam = cv2.VideoCapture(0)
+
+    from utils.cameras import RealSenseCamera
+
+    cam = RealSenseCamera()
+
     cv2.namedWindow("video")
-    if (cam.isOpened() == False):
-        print("Error opening video stream or file")
-        return
+
     img_counter = 0
     color_seg = ColorSegmentation()
     color_seg.stream_segmentation_config(cam, img_counter)
 
-    if cv2.getWindowProperty('video', cv2.WND_PROP_VISIBLE) != 1.0:
+    if cv2.getWindowProperty("video", cv2.WND_PROP_VISIBLE) != 1.0:
         cv2.namedWindow("video")
     if cv2.getWindowProperty('segmented_image', cv2.WND_PROP_VISIBLE) != 1.0:
         cv2.namedWindow('segmented_image')
 
     while True:
         print('Get new frame')
-        ret, img = cam.read()
+        ret, img = 1, cam.take_picture()
         if not ret:
             print("failed to grab frame")
             break
 
         segmented_img = color_seg.segmentation(img)
-        center_of_mass = color_seg.find_segmented_centers(segmented_img, 'averaging')
+        center_of_mass = find_segmented_centers(segmented_img, 'averaging')
         cv2.circle(img, (int(center_of_mass[0]), int(center_of_mass[1])), 7, (255, 255, 255), -1)
 
         cv2.imshow("video", img)
@@ -252,6 +254,40 @@ def test_online():
 
     cv2.destroyAllWindows()
 
+def test_detect():
+    print('Acquiring Camera')
+
+    from utils.cameras import RealSenseCamera
+
+    cam = RealSenseCamera()
+
+    cv2.namedWindow("video")
+
+    color_seg = ColorSegmentation(np.array([38, 67]), np.array([32, 255]), np.array([156, 255]))
+
+    cv2.namedWindow('segmented_image')
+
+    while True:
+        print('Get new frame')
+        ret, img = 1, cam.take_picture()
+        if not ret:
+            print("failed to grab frame")
+            break
+
+        segmented_img = color_seg.segmentation(img)
+        center_of_mass = find_segmented_centers(segmented_img, 'averaging')
+        cv2.circle(img, (int(center_of_mass[0]), int(center_of_mass[1])), 7, (255, 255, 255), -1)
+
+        cv2.imshow("video", img)
+        cv2.imshow('segmented_image', segmented_img)
+
+        k = cv2.waitKey(1) & 0xFF
+        if k % 256 == 27:
+            # ESC pressed
+            print("Escape hit, closing...")
+            break
+
+    cv2.destroyAllWindows()
 
 def detect_blobs_centers_of_mass(blobbed_image):
     contours = cv2.findContours(blobbed_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -352,4 +388,5 @@ def find_segmented_centers(segmented_img, mode='averaging', max_contours=2):
 
 if __name__ == '__main__':
     # test_offline("../resources/images/shoes_far1.jpeg", 0.5)
-    test_online()
+    # test_online()
+    test_detect()

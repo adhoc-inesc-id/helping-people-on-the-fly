@@ -59,7 +59,6 @@ def closest_node(point, centers):
     node = None
     smallest = np.inf
     for n, center in enumerate(centers):
-        rospy.loginfo(f"Distance between {point} and {center} (node {n})")
         distance = np.linalg.norm((center-point), 2)
         if distance < smallest:
             smallest = distance
@@ -241,7 +240,12 @@ if __name__ == '__main__':
     initial_state = np.array([last_known_robot_location, last_known_human_location] + explored_bits)
 
     # Homography
-    graph_node_centers_homography_real_world_referential = np.array(config["graph nodes real world points"])
+    graph_node_centers_homography_camera_referential = np.array(config["graph nodes camera points"])
+
+    graph_node_centers_homography_real_world_referential = []
+    for point in graph_node_centers_homography_camera_referential:
+        graph_node_centers_homography_real_world_referential.append(planar_homography.camera_to_real_world_point(point))
+    graph_node_centers_homography_real_world_referential = np.array(graph_node_centers_homography_real_world_referential)
 
     # Camera
     camera = ImageWrapperCamera("../resources/images/shoes_near.jpeg")
