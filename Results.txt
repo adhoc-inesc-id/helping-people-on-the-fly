@@ -1,0 +1,483 @@
+## 1 ##
+[INFO] [1602527645.141646]: Setting up algorithm and auxiliary structures
+[INFO] [1602527661.690998]: Initializing ROS Node adhoc_mmdp_decision
+[INFO] [1602527661.710249]: Setting up Manager node subscriber (local topic at /adhoc_mmdp/manager_decision)
+[INFO] [1602527661.750519]: Setting up Manager node publisher (topic at /adhoc_mmdp/decision_manager)
+[INFO] [1602527661.770423]: Ready
+[INFO] [1602527736.757376]: 
+[INFO] [1602527736.766229]: New Timestep
+[INFO] [1602527736.774770]: State: [0 0 1 0 0]
+[INFO] [1602527736.796157]: Sending action 3 to Manager node (stay)
+[INFO] [1602527757.186933]: 
+[INFO] [1602527757.197448]: New Timestep
+[INFO] [1602527757.207160]: State: [0 0 1 0 0], Action: 3, Next State: [0 1 1 1 0]
+[INFO] [1602527757.216994]: Running reinforcement on st=[0 0 1 0 0], a=3, st+1=[0 1 1 1 0]
+BOPA Loss: [[0.    0.    0.    0.    0.    0.    0.    0.    0.    0.    0.    0.
+  0.    0.    0.    0.729]
+ [0.    0.    0.    0.81  0.    0.    0.    0.81  0.    0.    0.    0.81
+  0.81  0.81  0.81  0.81 ]
+ [0.    0.    0.    0.    0.    0.    0.    0.    0.    0.    0.    0.
+  0.    0.    0.    0.729]]
+[INFO] [1602527757.631125]: Beliefs: [9.99250843e-01 3.74578599e-04 3.74578599e-04], (1/3)
+[INFO] [1602527757.642978]: Sending action 2 to Manager node (move to third-lower-index node)
+[INFO] [1602527778.529467]: 
+[INFO] [1602527778.538108]: New Timestep
+[INFO] [1602527778.545023]: State: [0 1 1 1 0], Action: 2, Next State: [1 3 1 1 0]
+[INFO] [1602527778.555689]: Running reinforcement on st=[0 1 1 1 0], a=2, st+1=[1 3 1 1 0]
+BOPA Loss: [[0.81  0.81  0.    0.81  0.81  0.81  0.    0.81  0.81  0.81  0.    0.81
+  1.539 1.539 0.    0.81 ]
+ [0.9   0.9   0.    0.9   0.9   0.9   0.    0.9   0.9   0.9   0.    0.9
+  1.71  1.71  0.    0.9  ]
+ [0.81  0.81  0.    0.81  0.81  0.81  0.    0.81  0.81  0.81  0.    0.81
+  1.539 1.539 0.    0.81 ]]
+[INFO] [1602527778.616118]: Beliefs: [9.99425379e-01 1.00007458e-04 4.74613995e-04], (1/3)
+[INFO] [1602527778.623685]: Sending action 2 to Manager node (move to third-lower-index node)
+[INFO] [1602527799.228039]: 
+[INFO] [1602527799.240754]: New Timestep
+[INFO] [1602527799.247856]: State: [1 3 1 1 0], Action: 2, Next State: [3 4 1 1 1]
+[INFO] [1602527799.255182]: Running reinforcement on st=[1 3 1 1 0], a=2, st+1=[3 4 1 1 1]
+BOPA Loss: [[1.71 0.   1.71 0.9  1.71 0.   1.71 0.9  0.9  0.   0.9  0.9  1.71 0.
+  1.71 0.9 ]
+ [0.9  0.9  0.9  0.   0.9  0.9  0.9  0.   0.   0.   0.   0.   0.9  0.9
+  0.9  0.  ]
+ [1.71 0.   1.71 0.9  1.71 0.   1.71 0.9  0.9  0.   0.9  0.9  1.71 0.
+  1.71 0.9 ]]
+[INFO] [1602527799.316996]: Beliefs: [9.99311247e-01 1.14262296e-04 5.74490894e-04], (1/3)
+[INFO] [1602527799.325521]: Sending action 2 to Manager node (move to third-lower-index node)
+
+
+[INFO] [1602527728.331576]: Initializing auxiliary structures
+[0 0 1 0 0]
+[INFO] [1602527728.488771]: Initializing ROS Node adhoc_mmdp_manager
+[INFO] [1602527728.496724]: Setting up Decision node subscriber (local topic at /adhoc_mmdp/decision_manager)
+[INFO] [1602527728.517125]: Setting up Astro node subscriber (local topic at /adhoc_mmdp/astro_manager)
+[INFO] [1602527728.555295]: Setting up Decision node publisher (topic at /adhoc_mmdp/manager_decision)
+[INFO] [1602527728.570650]: Setting up Astro node publisher (topic at /adhoc_mmdp/manager_astro)
+[INFO] [1602527728.588753]: Starting in 5
+[INFO] [1602527729.599298]: Starting in 4
+[INFO] [1602527730.609146]: Starting in 3
+[INFO] [1602527731.617673]: Starting in 2
+[INFO] [1602527732.631036]: Starting in 1
+[INFO] [1602527733.641294]: Starting
+[INFO] [1602527733.652662]: TTS: You are near door. Astro is near door
+[INFO] [1602527736.749440]: Sent state to Decision node: '0 0 1 0 0'
+[INFO] [1602527736.806337]: ############
+[INFO] [1602527736.814951]: New Timestep
+[INFO] [1602527736.821995]: Received action #3 (stay) from Decision node
+[INFO] [1602527736.828467]: Mapped action 3 to order go to 0, 0
+[INFO] [1602527736.834596]: Sent Astro node order go to 0, 0
+[INFO] [1602527736.841536]: TTS: Waiting for Astro to move.
+[INFO] [1602527739.001971]: Received Astro node message: '[0. 0.]'
+[INFO] [1602527739.011123]: TTS: Sir, you can make your move.
+[INFO] [1602527741.420941]: 10
+[INFO] [1602527742.429592]: 9
+[INFO] [1602527743.454511]: 8
+[INFO] [1602527744.464374]: 7
+[INFO] [1602527745.475364]: 6
+[INFO] [1602527746.485518]: 5
+[INFO] [1602527747.494359]: 4
+[INFO] [1602527748.505469]: 3
+[INFO] [1602527749.514387]: 2
+[INFO] [1602527750.526761]: 1
+[INFO] [1602527751.538378]: TTS: Reading your position
+[INFO] [1602527753.223011]: Astro is closest to door
+[INFO] [1602527753.232027]: TTS: Astro is near door
+[INFO] [1602527755.054288]: Successfully took picture
+[INFO] [1602527755.126270]: Ran color segmentation
+[INFO] [1602527755.133788]: Detected feet at (422, 349)
+[INFO] [1602527755.140584]: Human is closest to middle of the room
+[INFO] [1602527755.147831]: TTS: You are near middle of the room
+[INFO] [1602527757.161407]: Successfully built state st: [0 1 1 1 0]
+[INFO] [1602527757.170291]: Built state array [0 1 1 1 0]'
+[INFO] [1602527757.177506]: Sent state to Decision node: '0 1 1 1 0'
+[INFO] [1602527757.186223]: Awaiting Astro node's message
+[INFO] [1602527757.651530]: ############
+[INFO] [1602527757.659270]: New Timestep
+[INFO] [1602527757.666247]: Received action #2 (move to third-lower-index node) from Decision node
+[INFO] [1602527757.673669]: Mapped action 2 to order go to 0, 1
+[INFO] [1602527757.679674]: Sent Astro node order go to 0, 1
+[INFO] [1602527757.690843]: TTS: Waiting for Astro to move.
+[INFO] [1602527759.863611]: Received Astro node message: '[0. 1.]'
+[INFO] [1602527759.882707]: TTS: Sir, you can make your move.
+[INFO] [1602527762.301922]: 10
+[INFO] [1602527763.311055]: 9
+[INFO] [1602527764.323224]: 8
+[INFO] [1602527765.346568]: 7
+[INFO] [1602527766.355650]: 6
+[INFO] [1602527767.364355]: 5
+[INFO] [1602527768.373149]: 4
+[INFO] [1602527769.382679]: 3
+[INFO] [1602527770.402239]: 2
+[INFO] [1602527771.412212]: 1
+[INFO] [1602527772.423022]: TTS: Reading your position
+[INFO] [1602527774.102537]: Astro is closest to middle of the room
+[INFO] [1602527774.141536]: TTS: Astro is near middle of the room
+[INFO] [1602527776.457620]: Successfully took picture
+[INFO] [1602527776.531256]: Ran color segmentation
+[INFO] [1602527776.540419]: Detected feet at (950, 162)
+[INFO] [1602527776.549853]: Human is closest to Table Michael
+[INFO] [1602527776.558587]: TTS: You are near Table Michael
+[INFO] [1602527778.472404]: Successfully built state st: [1 3 1 1 0]
+[INFO] [1602527778.508201]: Built state array [1 3 1 1 0]'
+[INFO] [1602527778.517710]: Sent state to Decision node: '1 3 1 1 0'
+[INFO] [1602527778.528869]: Awaiting Astro node's message
+[INFO] [1602527778.632358]: ############
+[INFO] [1602527778.646641]: New Timestep
+[INFO] [1602527778.655256]: Received action #2 (move to third-lower-index node) from Decision node
+[INFO] [1602527778.661717]: Mapped action 2 to order go to 0, 3
+[INFO] [1602527778.668506]: Sent Astro node order go to 0, 3
+[INFO] [1602527778.675471]: TTS: Waiting for Astro to move.
+[INFO] [1602527780.947928]: Received Astro node message: '[0. 3.]'
+[INFO] [1602527780.955406]: TTS: Sir, you can make your move.
+[INFO] [1602527783.364348]: 10
+[INFO] [1602527784.373102]: 9
+[INFO] [1602527785.383121]: 8
+[INFO] [1602527786.393175]: 7
+[INFO] [1602527787.403131]: 6
+[INFO] [1602527788.413272]: 5
+[INFO] [1602527789.421029]: 4
+[INFO] [1602527790.429837]: 3
+[INFO] [1602527791.437690]: 2
+[INFO] [1602527792.446261]: 1
+[INFO] [1602527793.457099]: TTS: Reading your position
+[INFO] [1602527795.130507]: Astro is closest to Table Michael
+[INFO] [1602527795.138130]: TTS: Astro is near Table Michael
+[INFO] [1602527797.317193]: Successfully took picture
+[INFO] [1602527797.391264]: Ran color segmentation
+[INFO] [1602527797.399271]: Detected feet at (1155, 368)
+[INFO] [1602527797.407603]: Human is closest to Table John
+[INFO] [1602527797.418133]: TTS: You are near Table John
+[INFO] [1602527799.200851]: Successfully built state st: [3 4 1 1 1]
+[INFO] [1602527799.209627]: Built state array [3 4 1 1 1]'
+[INFO] [1602527799.216570]: Sent state to Decision node: '3 4 1 1 1'
+[INFO] [1602527799.227793]: Awaiting Astro node's message
+[INFO] [1602527799.332484]: ############
+[INFO] [1602527799.338582]: New Timestep
+[INFO] [1602527799.344775]: Received action #2 (move to third-lower-index node) from Decision node
+[INFO] [1602527799.351053]: Mapped action 2 to order go to 0, 1
+[INFO] [1602527799.360697]: Sent Astro node order go to 0, 1
+[INFO] [1602527799.367488]: TTS: Waiting for Astro to move.
+[INFO] [1602527801.535373]: Received Astro node message: '[0. 1.]'
+[INFO] [1602527801.544290]: TTS: Sir, you can make your move.
+[INFO] [1602527803.953086]: 10
+[INFO] [1602527804.960900]: 9
+[INFO] [1602527805.969354]: 8
+[INFO] [1602527806.977545]: 7
+[INFO] [1602527807.986578]: 6
+^C[INFO] [1602527808.995728]: 5
+
+
+## 2 ##
+
+[INFO] [1602527859.192427]: Setting up algorithm and auxiliary structures
+[INFO] [1602527876.540509]: Initializing ROS Node adhoc_mmdp_decision
+[INFO] [1602527876.560194]: Setting up Manager node subscriber (local topic at /adhoc_mmdp/manager_decision)
+[INFO] [1602527876.600524]: Setting up Manager node publisher (topic at /adhoc_mmdp/decision_manager)
+[INFO] [1602527876.619785]: Ready
+[INFO] [1602527886.313702]: 
+[INFO] [1602527886.322412]: New Timestep
+[INFO] [1602527886.330306]: State: [0 0 0 0 0]
+[INFO] [1602527886.339240]: Sending action 1 to Manager node (move to second-lower-index node)
+[INFO] [1602527907.182824]: 
+[INFO] [1602527907.191236]: New Timestep
+[INFO] [1602527907.198282]: State: [0 0 0 0 0], Action: 1, Next State: [1 1 1 0 0]
+[INFO] [1602527907.207879]: Running reinforcement on st=[0 0 0 0 0], a=1, st+1=[1 1 1 0 0]
+BOPA Loss: [[0.    0.    0.    0.    0.    0.    0.    0.    0.    0.    0.    0.
+  0.    0.    0.    0.729]
+ [0.    0.    0.    0.81  0.    0.    0.    0.81  0.    0.    0.    0.81
+  0.81  0.81  0.81  0.81 ]
+ [0.    0.    0.    0.    0.    0.    0.    0.    0.    0.    0.    0.
+  0.    0.    0.    0.729]]
+[INFO] [1602527907.646983]: Beliefs: [1.66583375e-04 5.55444500e-01 4.44388917e-01], (2/3)
+[INFO] [1602527907.659689]: Sending action 2 to Manager node (move to third-lower-index node)
+[INFO] [1602527927.971165]: 
+[INFO] [1602527927.981008]: New Timestep
+[INFO] [1602527927.989156]: State: [1 1 1 0 0], Action: 2, Next State: [3 2 1 1 1]
+[INFO] [1602527927.995541]: Running reinforcement on st=[1 1 1 0 0], a=2, st+1=[3 2 1 1 1]
+BOPA Loss: [[1.539 1.539 0.    0.81  1.539 1.539 0.    0.81  0.    0.    0.    0.
+  0.81  0.81  0.    0.81 ]
+ [1.71  1.71  1.71  1.71  1.71  1.71  0.    0.9   1.71  0.    1.71  0.9
+  1.71  0.9   0.9   0.9  ]
+ [1.539 1.539 0.81  0.81  1.539 1.539 0.    0.81  0.81  0.    0.81  0.
+  0.81  0.81  0.    0.81 ]]
+[INFO] [1602527928.062998]: Beliefs: [3.59683443e-04 9.99280633e-01 3.59683443e-04], (2/3)
+[INFO] [1602527928.070848]: Sending action 0 to Manager node (move to lower-index node)
+^C(adhoc) [john@Machine decision]$ 
+
+
+[INFO] [1602527877.901131]: Initializing auxiliary structures
+[0 0 0 0 0]
+[INFO] [1602527878.058738]: Initializing ROS Node adhoc_mmdp_manager
+[INFO] [1602527878.065886]: Setting up Decision node subscriber (local topic at /adhoc_mmdp/decision_manager)
+[INFO] [1602527878.087404]: Setting up Astro node subscriber (local topic at /adhoc_mmdp/astro_manager)
+[INFO] [1602527878.126525]: Setting up Decision node publisher (topic at /adhoc_mmdp/manager_decision)
+[INFO] [1602527878.139043]: Setting up Astro node publisher (topic at /adhoc_mmdp/manager_astro)
+[INFO] [1602527878.151415]: Starting in 5
+[INFO] [1602527879.161046]: Starting in 4
+[INFO] [1602527880.170921]: Starting in 3
+[INFO] [1602527881.179059]: Starting in 2
+[INFO] [1602527882.189031]: Starting in 1
+[INFO] [1602527883.200969]: Starting
+[INFO] [1602527883.209530]: TTS: You are near door. Astro is near door
+[INFO] [1602527886.305136]: Sent state to Decision node: '0 0 0 0 0'
+[INFO] [1602527886.347178]: ############
+[INFO] [1602527886.360116]: New Timestep
+[INFO] [1602527886.369292]: Received action #1 (move to second-lower-index node) from Decision node
+[INFO] [1602527886.376769]: Mapped action 1 to order go to 0, 1
+[INFO] [1602527886.383247]: Sent Astro node order go to 0, 1
+[INFO] [1602527886.390224]: TTS: Waiting for Astro to move.
+[INFO] [1602527888.557358]: Received Astro node message: '[0. 1.]'
+[INFO] [1602527888.565857]: TTS: Sir, you can make your move.
+[INFO] [1602527890.979977]: 10
+[INFO] [1602527891.987615]: 9
+[INFO] [1602527892.997768]: 8
+[INFO] [1602527894.008687]: 7
+[INFO] [1602527895.020452]: 6
+[INFO] [1602527896.028898]: 5
+[INFO] [1602527897.064397]: 4
+[INFO] [1602527898.100060]: 3
+[INFO] [1602527899.111053]: 2
+[INFO] [1602527900.123752]: 1
+[INFO] [1602527901.138828]: TTS: Reading your position
+[INFO] [1602527902.824332]: Astro is closest to middle of the room
+[INFO] [1602527902.831587]: TTS: Astro is near middle of the room
+[INFO] [1602527905.123105]: Successfully took picture
+[INFO] [1602527905.198111]: Ran color segmentation
+[INFO] [1602527905.207923]: Detected feet at (466, 329)
+[INFO] [1602527905.215227]: Human is closest to middle of the room
+[INFO] [1602527905.223808]: TTS: You are near middle of the room
+[INFO] [1602527907.148539]: Successfully built state st: [1 1 1 0 0]
+[INFO] [1602527907.158553]: Built state array [1 1 1 0 0]'
+[INFO] [1602527907.165839]: Sent state to Decision node: '1 1 1 0 0'
+[INFO] [1602527907.182460]: Awaiting Astro node's message
+[INFO] [1602527907.667413]: ############
+[INFO] [1602527907.676637]: New Timestep
+[INFO] [1602527907.688707]: Received action #2 (move to third-lower-index node) from Decision node
+[INFO] [1602527907.698726]: Mapped action 2 to order go to 0, 3
+[INFO] [1602527907.705990]: Sent Astro node order go to 0, 3
+[INFO] [1602527907.715849]: TTS: Waiting for Astro to move.
+[INFO] [1602527909.884513]: Received Astro node message: '[0. 3.]'
+[INFO] [1602527909.892901]: TTS: Sir, you can make your move.
+[INFO] [1602527912.317055]: 10
+[INFO] [1602527913.326831]: 9
+[INFO] [1602527914.337678]: 8
+[INFO] [1602527915.347278]: 7
+[INFO] [1602527916.356107]: 6
+[INFO] [1602527917.367050]: 5
+[INFO] [1602527918.382972]: 4
+[INFO] [1602527919.392025]: 3
+[INFO] [1602527920.400901]: 2
+[INFO] [1602527921.409341]: 1
+[INFO] [1602527922.417592]: TTS: Reading your position
+[INFO] [1602527924.099819]: Astro is closest to Table Michael
+[INFO] [1602527924.115874]: TTS: Astro is near Table Michael
+[INFO] [1602527926.287130]: Successfully took picture
+[INFO] [1602527926.361759]: Ran color segmentation
+[INFO] [1602527926.383030]: Detected feet at (13, 367)
+[INFO] [1602527926.396524]: Human is closest to baxter
+[INFO] [1602527926.406506]: TTS: You are near baxter
+[INFO] [1602527927.948793]: Successfully built state st: [3 2 1 1 1]
+[INFO] [1602527927.956421]: Built state array [3 2 1 1 1]'
+[INFO] [1602527927.963760]: Sent state to Decision node: '3 2 1 1 1'
+[INFO] [1602527927.970815]: Awaiting Astro node's message
+[INFO] [1602527928.078832]: ############
+[INFO] [1602527928.086075]: New Timestep
+[INFO] [1602527928.097275]: Received action #0 (move to lower-index node) from Decision node
+[INFO] [1602527928.105421]: Mapped action 0 to order go to 0, 1
+[INFO] [1602527928.112256]: Sent Astro node order go to 0, 1
+[INFO] [1602527928.126369]: TTS: Waiting for Astro to move.
+[INFO] [1602527930.305804]: Received Astro node message: '[0. 1.]'
+[INFO] [1602527930.315835]: TTS: Sir, you can make your move.
+[INFO] [1602527932.726977]: 10
+[INFO] [1602527933.735579]: 9
+[INFO] [1602527934.743748]: 8
+[INFO] [1602527935.752803]: 7
+[INFO] [1602527936.763139]: 6
+[INFO] [1602527937.772781]: 5
+[INFO] [1602527938.781961]: 4
+[INFO] [1602527939.790360]: 3
+[INFO] [1602527940.808791]: 2
+[INFO] [1602527941.819931]: 1
+[INFO] [1602527942.828940]: TTS: Reading your position
+[INFO] [1602527944.582416]: Astro is closest to middle of the room
+[INFO] [1602527944.589938]: TTS: Astro is near middle of the room
+[INFO] [1602527946.890845]: Successfully took picture
+[INFO] [1602527946.966917]: Ran color segmentation
+[INFO] [1602527946.977027]: Detected feet at (684, 681)
+[INFO] [1602527946.985681]: Human is closest to door
+[INFO] [1602527946.994238]: TTS: You are near door
+[INFO] [1602527948.413886]: Successfully built state st: [1 0 1 1 1]
+[INFO] [1602527948.422508]: Built state array [1 0 1 1 1]'
+[INFO] [1602527948.429239]: Sent state to Decision node: '1 0 1 1 1'
+[INFO] [1602527948.435813]: Awaiting Astro node's message
+
+
+## 3 ##
+
+[INFO] [1602527994.748447]: Setting up algorithm and auxiliary structures
+[INFO] [1602528011.644977]: Initializing ROS Node adhoc_mmdp_decision
+[INFO] [1602528011.654870]: Setting up Manager node subscriber (local topic at /adhoc_mmdp/manager_decision)
+[INFO] [1602528011.678502]: Setting up Manager node publisher (topic at /adhoc_mmdp/decision_manager)
+[INFO] [1602528011.693259]: Ready
+[INFO] [1602528022.563924]: 
+[INFO] [1602528022.572341]: New Timestep
+[INFO] [1602528022.583613]: State: [0 0 0 0 0]
+[INFO] [1602528022.592775]: Sending action 1 to Manager node (move to second-lower-index node)
+[INFO] [1602528043.338807]: 
+[INFO] [1602528043.348281]: New Timestep
+[INFO] [1602528043.357111]: State: [0 0 0 0 0], Action: 1, Next State: [1 1 1 0 0]
+[INFO] [1602528043.364083]: Running reinforcement on st=[0 0 0 0 0], a=1, st+1=[1 1 1 0 0]
+BOPA Loss: [[0.    0.    0.    0.    0.    0.    0.    0.    0.    0.    0.    0.
+  0.    0.    0.    0.729]
+ [0.    0.    0.    0.81  0.    0.    0.    0.81  0.    0.    0.    0.81
+  0.81  0.81  0.81  0.81 ]
+ [0.    0.    0.    0.    0.    0.    0.    0.    0.    0.    0.    0.
+  0.    0.    0.    0.729]]
+[INFO] [1602528043.767178]: Beliefs: [1.66583375e-04 5.55444500e-01 4.44388917e-01], (2/3)
+[INFO] [1602528043.778243]: Sending action 1 to Manager node (move to second-lower-index node)
+[INFO] [1602528064.272292]: 
+[INFO] [1602528064.395537]: New Timestep
+[INFO] [1602528064.403817]: State: [1 1 1 0 0], Action: 1, Next State: [2 3 1 1 0]
+[INFO] [1602528064.412758]: Running reinforcement on st=[1 1 1 0 0], a=1, st+1=[2 3 1 1 0]
+BOPA Loss: [[1.539 1.539 0.    0.81  1.539 1.539 0.    0.81  0.    0.    0.    0.
+  0.81  0.81  0.    0.81 ]
+ [1.71  1.71  1.71  1.71  1.71  1.71  0.    0.9   1.71  0.    1.71  0.9
+  1.71  0.9   0.9   0.9  ]
+ [1.539 1.539 0.81  0.81  1.539 1.539 0.    0.81  0.81  0.    0.81  0.
+  0.81  0.81  0.    0.81 ]]
+[INFO] [1602528064.508749]: Beliefs: [4.49449396e-04 4.49449396e-04 9.99101101e-01], (3/3)
+[INFO] [1602528064.568531]: Sending action 2 to Manager node (move to third-lower-index node)
+[INFO] [1602528085.426034]: 
+[INFO] [1602528085.435849]: New Timestep
+[INFO] [1602528085.444503]: State: [2 3 1 1 0], Action: 2, Next State: [1 4 1 1 1]
+[INFO] [1602528085.456885]: Running reinforcement on st=[2 3 1 1 0], a=2, st+1=[1 4 1 1 1]
+BOPA Loss: [[1.71 0.   1.71 0.9  1.71 0.   1.71 0.9  1.71 0.   1.71 0.9  1.71 0.
+  1.71 0.9 ]
+ [0.9  0.9  0.9  0.   0.9  0.9  0.9  0.   0.9  0.9  0.9  0.   0.9  0.9
+  0.9  0.  ]
+ [1.71 0.   1.71 0.9  1.71 0.   1.71 0.9  1.71 0.   1.71 0.9  1.71 0.
+  1.71 0.9 ]]
+[INFO] [1602528085.516025]: Beliefs: [5.49531524e-04 1.00014947e-04 9.99350454e-01], (3/3)
+[INFO] [1602528085.527070]: Sending action 2 to Manager node (move to third-lower-index node)
+^C(adhoc) [john@Machine decision]$ 
+
+[INFO] [1602528014.122692]: Initializing auxiliary structures
+[0 0 0 0 0]
+[INFO] [1602528014.290747]: Initializing ROS Node adhoc_mmdp_manager
+[INFO] [1602528014.298592]: Setting up Decision node subscriber (local topic at /adhoc_mmdp/decision_manager)
+[INFO] [1602528014.321867]: Setting up Astro node subscriber (local topic at /adhoc_mmdp/astro_manager)
+[INFO] [1602528014.353324]: Setting up Decision node publisher (topic at /adhoc_mmdp/manager_decision)
+[INFO] [1602528014.370788]: Setting up Astro node publisher (topic at /adhoc_mmdp/manager_astro)
+[INFO] [1602528014.384255]: Starting in 5
+[INFO] [1602528015.391712]: Starting in 4
+[INFO] [1602528016.400107]: Starting in 3
+[INFO] [1602528017.411556]: Starting in 2
+[INFO] [1602528018.420751]: Starting in 1
+[INFO] [1602528019.431015]: Starting
+[INFO] [1602528019.443500]: TTS: You are near door. Astro is near door
+[INFO] [1602528022.555320]: Sent state to Decision node: '0 0 0 0 0'
+[INFO] [1602528022.599340]: ############
+[INFO] [1602528022.606242]: New Timestep
+[INFO] [1602528022.612614]: Received action #1 (move to second-lower-index node) from Decision node
+[INFO] [1602528022.627871]: Mapped action 1 to order go to 0, 1
+[INFO] [1602528022.637161]: Sent Astro node order go to 0, 1
+[INFO] [1602528022.644585]: TTS: Waiting for Astro to move.
+[INFO] [1602528024.803876]: Received Astro node message: '[0. 1.]'
+[INFO] [1602528024.811194]: TTS: Sir, you can make your move.
+[INFO] [1602528027.221521]: 10
+[INFO] [1602528028.231800]: 9
+[INFO] [1602528029.239858]: 8
+[INFO] [1602528030.247563]: 7
+[INFO] [1602528031.256150]: 6
+[INFO] [1602528032.264637]: 5
+[INFO] [1602528033.275415]: 4
+[INFO] [1602528034.284085]: 3
+[INFO] [1602528035.300893]: 2
+[INFO] [1602528036.311022]: 1
+[INFO] [1602528037.320337]: TTS: Reading your position
+[INFO] [1602528038.994849]: Astro is closest to middle of the room
+[INFO] [1602528039.003694]: TTS: Astro is near middle of the room
+[INFO] [1602528041.301559]: Successfully took picture
+[INFO] [1602528041.380943]: Ran color segmentation
+[INFO] [1602528041.391796]: Detected feet at (468, 331)
+[INFO] [1602528041.399885]: Human is closest to middle of the room
+[INFO] [1602528041.405697]: TTS: You are near middle of the room
+[INFO] [1602528043.311875]: Successfully built state st: [1 1 1 0 0]
+[INFO] [1602528043.319934]: Built state array [1 1 1 0 0]'
+[INFO] [1602528043.327661]: Sent state to Decision node: '1 1 1 0 0'
+[INFO] [1602528043.338672]: Awaiting Astro node's message
+[INFO] [1602528043.786249]: ############
+[INFO] [1602528043.793242]: New Timestep
+[INFO] [1602528043.800020]: Received action #1 (move to second-lower-index node) from Decision node
+[INFO] [1602528043.806681]: Mapped action 1 to order go to 0, 2
+[INFO] [1602528043.813001]: Sent Astro node order go to 0, 2
+[INFO] [1602528043.819769]: TTS: Waiting for Astro to move.
+[INFO] [1602528045.987270]: Received Astro node message: '[0. 2.]'
+[INFO] [1602528045.996411]: TTS: Sir, you can make your move.
+[INFO] [1602528048.404885]: 10
+[INFO] [1602528049.413849]: 9
+[INFO] [1602528050.422884]: 8
+[INFO] [1602528051.430944]: 7
+[INFO] [1602528052.439416]: 6
+[INFO] [1602528053.454141]: 5
+[INFO] [1602528054.462826]: 4
+[INFO] [1602528055.471027]: 3
+[INFO] [1602528056.479775]: 2
+[INFO] [1602528057.488738]: 1
+[INFO] [1602528058.497619]: TTS: Reading your position
+[INFO] [1602528060.177769]: Astro is closest to baxter
+[INFO] [1602528060.186326]: TTS: Astro is near baxter
+[INFO] [1602528062.111652]: Successfully took picture
+[INFO] [1602528062.184938]: Ran color segmentation
+[INFO] [1602528062.192252]: Detected feet at (962, 158)
+[INFO] [1602528062.201105]: Human is closest to Table Michael
+[INFO] [1602528062.209857]: TTS: You are near Table Michael
+[INFO] [1602528064.134211]: Successfully built state st: [2 3 1 1 0]
+[INFO] [1602528064.256475]: Built state array [2 3 1 1 0]'
+[INFO] [1602528064.263013]: Sent state to Decision node: '2 3 1 1 0'
+[INFO] [1602528064.271900]: Awaiting Astro node's message
+[INFO] [1602528064.575411]: ############
+[INFO] [1602528064.699858]: New Timestep
+[INFO] [1602528064.707669]: Received action #2 (move to third-lower-index node) from Decision node
+[INFO] [1602528064.717658]: Mapped action 2 to order go to 0, 1
+[INFO] [1602528064.724221]: Sent Astro node order go to 0, 1
+[INFO] [1602528064.731334]: TTS: Waiting for Astro to move.
+[INFO] [1602528066.901546]: Received Astro node message: '[0. 1.]'
+[INFO] [1602528066.909997]: TTS: Sir, you can make your move.
+[INFO] [1602528069.317003]: 10
+[INFO] [1602528070.326660]: 9
+[INFO] [1602528071.335640]: 8
+[INFO] [1602528072.344312]: 7
+[INFO] [1602528073.353507]: 6
+[INFO] [1602528074.362267]: 5
+[INFO] [1602528075.370586]: 4
+[INFO] [1602528076.379635]: 3
+[INFO] [1602528077.390916]: 2
+[INFO] [1602528078.399693]: 1
+[INFO] [1602528079.423156]: TTS: Reading your position
+[INFO] [1602528081.098020]: Astro is closest to middle of the room
+[INFO] [1602528081.105934]: TTS: Astro is near middle of the room
+[INFO] [1602528083.413667]: Successfully took picture
+[INFO] [1602528083.488441]: Ran color segmentation
+[INFO] [1602528083.496149]: Detected feet at (1148, 368)
+[INFO] [1602528083.503708]: Human is closest to Table John
+[INFO] [1602528083.510276]: TTS: You are near Table John
+[INFO] [1602528085.399924]: Successfully built state st: [1 4 1 1 1]
+[INFO] [1602528085.408500]: Built state array [1 4 1 1 1]'
+[INFO] [1602528085.415892]: Sent state to Decision node: '1 4 1 1 1'
+[INFO] [1602528085.425702]: Awaiting Astro node's message
+[INFO] [1602528085.534450]: ############
+[INFO] [1602528085.541705]: New Timestep
+[INFO] [1602528085.548851]: Received action #2 (move to third-lower-index node) from Decision node
+[INFO] [1602528085.556138]: Mapped action 2 to order go to 0, 3
+[INFO] [1602528085.562612]: Sent Astro node order go to 0, 3
+[INFO] [1602528085.570205]: TTS: Waiting for Astro to move.
+[INFO] [1602528087.736083]: Received Astro node message: '[0. 3.]'
+[INFO] [1602528087.744894]: TTS: Sir, you can make your move.
+[INFO] [1602528090.156451]: 10
+[INFO] [1602528091.164231]: 9
+[INFO] [1602528092.188795]: 8
+[INFO] [1602528093.205713]: 7
+[INFO] [1602528094.214049]: 6
+[INFO] [1602528095.231317]: 5
+[INFO] [1602528096.239877]: 4

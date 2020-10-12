@@ -39,21 +39,29 @@ def find_next_node(next_index):
     next_node = adjacencies[next_index]
     return next_node
 
-def send_astro_order(order: str):
+def send_astro_order(order: str, next_node: int):
     rospy.loginfo(f"Sent Astro node order {order}")
     say_tts("Waiting for Astro to move.")
-    astro_publisher.publish(order)
+    astro_publisher.publish(f"Move astro to {places[next_node]}")
+    parts = order.replace(",", "").split(" ")[2:]
+    dead_reckoning = np.array([float(i) for i in parts])
+    rospy.loginfo(f"Received Astro node message: '{dead_reckoning}'")
+    state = make_current_state(dead_reckoning)
+    rospy.loginfo(f"Built state array {state}'")
+    request_action_from_decision_node(state)
 
 
 def map_astro_order(action: int):
     if "move" in action_meanings[action]:
         next_node = find_next_node(action)
-        x, y = graph_node_centers_astro_referential[next_node]
-        order = f"go to {x}, {y}"
-    elif action == 3: order = "stay"
-    else: raise ValueError("Should be unreachable - invalid action index")
+    elif action == 3:
+        next_node = last_known_robot_location
+    else:
+        raise ValueError("Should be unreachable - invalid action index")
+    x, y = graph_node_centers_astro_referential[next_node]
+    order = f"go to {x}, {y}"
     rospy.loginfo(f"Mapped action {action} to order {order}")
-    return order
+    return order, next_node
 
 def closest_node(point, centers):
     node = None
@@ -71,6 +79,7 @@ def read_astro_node(dead_reckoning_coordinates):
     try:
         n_astro = closest_node(dead_reckoning_coordinates, graph_node_centers_astro_referential)
         rospy.loginfo(f"Astro is closest to {places[n_astro]}")
+        say_tts(f"Astro is near {places[n_astro]}")
         last_known_robot_location = n_astro
     except ValueError:
         n_astro = last_known_robot_location
@@ -108,6 +117,7 @@ def read_human_node():
     try:
         n_human = closest_node(feet_on_real_world, graph_node_centers_homography_real_world_referential)
         rospy.loginfo(f"Human is closest to {places[n_human]}")
+        say_tts(f"You are near {places[n_human]}")
         last_known_human_location = n_human
     except ValueError:
         n_human = last_known_human_location
@@ -164,16 +174,17 @@ def receive_decision_node_message(message: String):
     rospy.loginfo(f"Received action #{action} ({action_meanings[action]}) from Decision node")
 
     # 1 - Processar objectivo da ação (O que o astro tem de fazer)
-    order = map_astro_order(action)
+    order, next_node = map_astro_order(action)
 
     # 2 - Enviar ordens ao Astro
-    send_astro_order(order)
+    send_astro_order(order, next_node)
 
     # Aguardar mensagens do astro
     rospy.loginfo(f"Awaiting Astro node's message")
 
 # Step 3
 def receive_astro_node_message(message: String):
+    time.sleep(1)
     data = message.data
     dead_reckoning = np.array([float(i) for i in data.split(",")])
     rospy.loginfo(f"Received Astro node message: '{dead_reckoning}'")
@@ -232,23 +243,24 @@ if __name__ == '__main__':
     nodes_to_explore = config["nodes to explore"]
     graph_node_centers_astro_referential = np.array(config["graph nodes astro points"])
 
-    explored_bits = [1, 0, 0]
-    last_known_robot_location = 0
-    last_known_human_location = 0
+    explored_bits = [0, 0, 0]
     timesteps = 0
 
-    initial_state = np.array([last_known_robot_location, last_known_human_location] + explored_bits)
+    initial_state = np.array(config["initial state"])
+    print(initial_state)
+    last_known_robot_location = int(initial_state[0])
+    last_known_human_location = int(initial_state[1])
 
     # Homography
     graph_node_centers_homography_camera_referential = np.array(config["graph nodes camera points"])
-
     graph_node_centers_homography_real_world_referential = []
     for point in graph_node_centers_homography_camera_referential:
         graph_node_centers_homography_real_world_referential.append(planar_homography.camera_to_real_world_point(point))
-    graph_node_centers_homography_real_world_referential = np.array(graph_node_centers_homography_real_world_referential)
+    graph_node_centers_homography_real_world_referential = np.array(
+        graph_node_centers_homography_real_world_referential)
 
     # Camera
-    camera = ImageWrapperCamera("../resources/images/shoes_near.jpeg")
+    camera = RealSenseCamera()
     hue = np.array(config["color segmentation"]["hue"])
     sat = np.array(config["color segmentation"]["sat"])
     val = np.array(config["color segmentation"]["val"])
@@ -293,6 +305,7 @@ if __name__ == '__main__':
 
     rate = rospy.Rate(opt.communication_refresh_rate)
 
+    say_tts(f"You are near {places[last_known_human_location]}. Astro is near {places[last_known_robot_location]}")
     request_action_from_decision_node(initial_state)
 
     rospy.spin()

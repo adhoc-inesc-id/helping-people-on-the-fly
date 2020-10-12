@@ -1,18 +1,23 @@
 # Done
-node names: ["porta", "meio da sala", "baxter", "mesa miguel", "mesa joao"]
-nodes to explore: [0, 1, 4]
-human seconds to move: 5
+node names: ["door", "middle of the room", "baxter", "Table Michael", "Table John"]
+nodes to explore: [1, 2, 4]
+initial state: [0, 0, 0, 0, 0]
+human seconds to move: 10
 
 graph nodes astro points:
-  - []
+  - [0, 0]
+  - [0, 1]
+  - [0, 2]
+  - [0, 3]
+  - [0, 4]
 
 # Done
 graph nodes camera points:
-  - [332, 565]
-  - [621, 354]
-  - [153, 314]
-  - [982, 189]
-  - [1032, 380]
+  - [234, 624]
+  - [626, 360]
+  - [194, 314]
+  - [1005, 133]
+  - [1115,  266]
 
 # Done
 homography:

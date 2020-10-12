@@ -17,7 +17,7 @@ class GarbageCollectionMMDP(EnvironmentReckonMMDP):
     def __init__(self, adjacency_matrix: np.ndarray, dirty_nodes: Sequence[int],
                  movement_failure_probability: float, discount_factor: float = 0.90,
                  min_value_iteration_error: float = 10e-8, initial_state: np.ndarray = np.array([0, 0, 0, 0]),
-                 node_meanings: Sequence[str] = ("door", "baxter", "single workbench", "double workbench", "table")):
+                 node_meanings: Sequence[str] = ("door", "baxter", "single workbench", "double workbench", "table"), id="garbage-collection-v1"):
 
         super().__init__(adjacency_matrix, dirty_nodes, movement_failure_probability, discount_factor,
                          min_value_iteration_error, initial_state, node_meanings, "garbage-collection-mmdp-v1")

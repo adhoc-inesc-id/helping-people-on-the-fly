@@ -19,6 +19,9 @@ class BOPA(Agent):
         self.num_disjoint_actions = possible_mmdps[0].num_disjoint_actions
         self.index = index
 
+    def most_likely_task(self):
+        return self._beliefs.argmax()
+
     def policy(self, observation):
         return self._greedy_policy(observation) if len(self._mmdps) == 1 else self._bopa_policy(observation)
 
@@ -81,7 +84,7 @@ class BOPA(Agent):
         self._beliefs = new_beliefs / np.sum(new_beliefs)
         info = {f"MMDP #{i}'s Likelihood": prob for i, prob in enumerate(self._beliefs)}
         loss = self.loss(timestep.observation)
-        # TODO - Add to info
+        print(f"BOPA Loss: {loss}")
         return info
 
     def _greedy_reinforce(self):

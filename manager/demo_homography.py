@@ -24,12 +24,12 @@ if __name__ == '__main__':
     cv2.setMouseCallback('image', callback)
 
     camera = RealSenseCamera()
-    image = camera.take_picture()
-    width = int(image.shape[1] * opt.downscale)
-    height = int(image.shape[0] * opt.downscale)
-    image = cv2.resize(image, (width, height), interpolation=cv2.INTER_AREA)
 
     while (1):
+        image = camera.take_picture()
+        width = int(image.shape[1] * opt.downscale)
+        height = int(image.shape[0] * opt.downscale)
+        image = cv2.resize(image, (width, height), interpolation=cv2.INTER_AREA)
         cv2.imshow('image', image)
         k = cv2.waitKey(20) & 0xFF
         if k == 27:

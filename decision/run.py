@@ -23,20 +23,21 @@ def receive_manager_message(message: String):
 
     global initial_state, last_state, last_action
 
-    rospy.loginfo(f"Received state from Manager node: {state}")
     if initial_state:
+        rospy.loginfo(f"State: {state}")
         initial_state = False
     else:
+        rospy.loginfo(f"State: {last_state}, Action: {last_action}, Next State: {state}")
         timestep = Timestep(None, last_state, last_action, None, state, None, {})
         rospy.loginfo(f"Running reinforcement on st={last_state}, a={last_action}, st+1={state}")
         agent.reinforcement(timestep)
-
+        rospy.loginfo(f"Beliefs: {agent._beliefs}, ({agent.most_likely_task()+1}/3)")
     action = agent.action(state)
 
     last_state = state
     last_action = action
 
-    rospy.loginfo(f"Sending action {action} to Manager node ({action_meanings[action][0]})")
+    rospy.loginfo(f"Sending action {action} to Manager node ({action_meanings[action]})")
     send_manager_message(f"{action}")
 
 def setup_possible_tasks():
@@ -111,7 +112,7 @@ if __name__ == '__main__':
     last_action = None
     possible_tasks = setup_possible_tasks()
     agent = setup_agent(possible_tasks)
-    action_meanings = possible_tasks[0].action_meanings
+    action_meanings = possible_tasks[0].individual_action_meanings
 
     rospy.loginfo(f"Initializing ROS Node {opt.node_name}")
 

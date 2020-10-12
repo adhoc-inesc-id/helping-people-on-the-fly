@@ -1,11 +1,16 @@
 import argparse
 import cv2
+import pyttsx3
 import yaml
 import numpy as np
 
 from utils import planar_homography
 from utils.cameras import RealSenseCamera
 from utils.color_segmentation import ColorSegmentation, detect_blobs_centers_of_mass
+
+def say_tts(text):
+    engine.say(text)
+    engine.runAndWait()
 
 def closest_node(point, centers):
     node = None
@@ -25,12 +30,18 @@ if __name__ == '__main__':
     opt = parser.parse_args()
 
     with open('config.yml', 'r') as file: config = yaml.load(file, Loader=yaml.FullLoader)
-
+    engine = pyttsx3.init()
+    engine.setProperty("voice", "english-us")
+    engine.setProperty("rate", 150)
     hue = np.array(config["color segmentation"]["hue"])
     sat = np.array(config["color segmentation"]["sat"])
     val = np.array(config["color segmentation"]["val"])
     color_segmentation = ColorSegmentation(hue, sat, val)
     graph_node_centers_homography_camera_referential = np.array(config["graph nodes camera points"])
+    graph_node_centers_homography_real_world_referential = []
+    for point in graph_node_centers_homography_camera_referential:
+        graph_node_centers_homography_real_world_referential.append(planar_homography.camera_to_real_world_point(point))
+    graph_node_centers_homography_real_world_referential = np.array(graph_node_centers_homography_real_world_referential)
     nodes = config["node names"]
 
     cam = RealSenseCamera()
@@ -42,10 +53,13 @@ if __name__ == '__main__':
             img = color_segmentation.segmentation(img)
             try:
                 feet = detect_blobs_centers_of_mass(img)[0]
+                point = planar_homography.camera_to_real_world_point(feet)
             except:
                 continue
-            node = closest_node(feet, graph_node_centers_homography_camera_referential)
-            print(nodes[node])
+            node = closest_node(point, graph_node_centers_homography_real_world_referential)
+
+            say_tts(nodes[node])
+
             cv2.imshow("Feed", img)
             k = cv2.waitKey(1) & 0xFF
             if k % 256 == 27:
