@@ -1,23 +1,23 @@
-node names: ["porta", "baxter", "bancada", "bancada dupla", "mesa"]
+# Done
+node names: ["porta", "meio da sala", "baxter", "mesa miguel", "mesa joao"]
 nodes to explore: [0, 1, 4]
 human seconds to move: 5
 
 graph nodes astro points:
-  - [0.50, 1.150]
-  - [1.61, 0.756]
-  - [0.40, 0.19]
-  - [3.10, 0.29]
-  - [3.48, 1.286]
+  - []
 
+# Done
 graph nodes camera points:
-  - [295, 527]
-  - [587, 357]
-  - [211, 343]
-  - [860, 211]
-  - [1060, 323]
+  - [332, 565]
+  - [621, 354]
+  - [153, 314]
+  - [982, 189]
+  - [1032, 380]
 
+# Done
 homography:
 
+  # Done
   camera frame points:
   - [82, 339]
   - [105, 545]
@@ -26,6 +26,7 @@ homography:
   - [611, 225]
   - [709, 372]
 
+  # Done
   real world points:
     - [0, 0]
     - [0, 1]
@@ -34,10 +35,8 @@ homography:
     - [2, 0]
     - [2, 1]
 
+# Done
 color segmentation:
-  #hue: [25, 60]
-  #sat: [35, 255]
-  #val: [80, 255]
-  hue: [38, 67]
-  sat: [32, 255]
-  val: [156, 255]
+  hue: [24, 78]
+  sat: [0, 255]
+  val: [161, 245]

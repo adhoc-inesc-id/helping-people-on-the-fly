@@ -388,5 +388,5 @@ def find_segmented_centers(segmented_img, mode='averaging', max_contours=2):
 
 if __name__ == '__main__':
     # test_offline("../resources/images/shoes_far1.jpeg", 0.5)
-    # test_online()
-    test_detect()
+    test_online()
+    #test_detect()

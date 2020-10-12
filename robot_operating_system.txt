@@ -2,17 +2,20 @@ HOSTNAME do PC com ROS:
 
 No PC com câmara:
 
-source activate adhoc
 source /opt/ros/melodic/setup.bash
-export ROS_MASTER_URI=http://inesc:11311/
-export ROS_HOSTNAME=inesc
-export ROS_IP=190.168.0.64
+export ROS_MASTER_URI=http://190.168.0.104:11311
+source activate adhoc
 
 No Astro:
-Meter IP deste computador
-cd INSIDE/catkin_ws/inside_decision
+
+sudo nano /etc/hosts
+    190.168.0.106   Machine
 astro_driver
 astro_main
+
+Correr nó astro
+cd INSIDE/catkin_ws/src/inside_decision
+
 rosrun inside_decision
 
 Porta da interface: 8888
