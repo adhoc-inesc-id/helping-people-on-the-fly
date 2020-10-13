@@ -1,21 +1,22 @@
-HOSTNAME do PC com ROS:
+Configuração ROS em Arch-based
 
-No PC com câmara:
+# Instalação (lento)
+$ yay -S ros-melodic-desktop
 
+# Correr nós
 source /opt/ros/melodic/setup.bash
 export ROS_MASTER_URI=http://190.168.0.104:11311
 source activate adhoc
+python3 run.py
 
-No Astro:
+# Astro:
+$ sudo nano /etc/hosts
+    190.168.0.106   hostname-slave-nodes
+$ astro_driver
+$ astro_main
 
-sudo nano /etc/hosts
-    190.168.0.106   Machine
-astro_driver
-astro_main
+# Nós no astro
+$ cd INSIDE/catkin_ws/src/inside_decision
+$ python run.py
 
-Correr nó astro
-cd INSIDE/catkin_ws/src/inside_decision
-
-rosrun inside_decision
-
-Porta da interface: 8888
+$ Interface web astro: 190.168.0.104:8888

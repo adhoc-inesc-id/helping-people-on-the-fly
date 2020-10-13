@@ -1,0 +1,170 @@
+# ######## #
+## Task 1 ##
+# ######## #
+
+> ##################################################################
+> Timestep t0
+> State: [0 0 1 0 0]
+> Sending action 3 to Manager node (stay)
+> ##################################################################
+> Timestep t1
+> State: [0 0 1 0 0], Action: 3, Next State: [0 1 1 1 0]
+> Running reinforcement
+> Beliefs: [0.999, 0, 0], (1/3)
+> Sending action 2 to Manager node (move to third-lower-index node)
+> ##################################################################
+> Timestep t2
+> State: [0 1 1 1 0], Action: 2, Next State: [1 3 1 1 0]
+> Running reinforcement
+> Beliefs: [0.999, 0, 0], (1/3)
+> Sending action 2 to Manager node (move to third-lower-index node)
+> ##################################################################
+> Timestep t3
+> State: [1 3 1 1 0], Action: 2, Next State: [3 4 1 1 1]
+> Running reinforcement
+> Beliefs: [0.999, 0, 0.001], (1/3)
+> All nodes explored
+> ##################################################################
+
+    # ####### #
+    # Manager #
+    # ####### #
+
+    > ####################################################################################################################################################################
+    > Timestep t0
+    > You are near door. Astro is near door > Sent state to Decision node
+    > ####################################################################################################################################################################
+    > Timestep t1
+    > Received action #3 (stay) from Decision node
+    > Mapped action 3 to order go to 0, 0 > Sent Astro node order go to 0, 0 > Waiting for Astro to move. Sir, you can make your move. > Reading your position
+    > Astro is closest to door > Astro is near door
+    > Successfully took picture > Ran color segmentation > Detected feet at (422, 349) > Human is closest to middle of the room > You are near middle of the room
+    > Successfully built state st: [0 1 1 1 0] > Sent state to Decision node
+    > ####################################################################################################################################################################
+    > Timestep t2
+    > Received action #2 (move to third-lower-index node) from Decision node
+    > Mapped action 2 to order go to 0, 1 > Sent Astro node order go to 0, 1 > Waiting for Astro to move. Sir, you can make your move. > Reading your position
+    > Astro is closest to middle of the room > Astro is near middle of the room
+    > Successfully took picture > Ran color segmentation > Detected feet at (950, 162) > Human is closest to Table Michael > You are near Table Michael
+    > Successfully built state st: [1 3 1 1 0] > Sent state to Decision node
+    > ####################################################################################################################################################################
+    > Timestep t3
+    > Received action #2 (move to third-lower-index node) from Decision node
+    > Mapped action 2 to order go to 0, 3 > Sent Astro node order go to 0, 3 > Waiting for Astro to move. Sir, you can make your move. > Reading your position
+    > Astro is closest to Table Michael > Astro is near Table Michael
+    > Successfully took picture > Ran color segmentation > Detected feet at (1155, 368) > Human is closest to Table John > You are near Table John
+    > Successfully built state st: [3 4 1 1 1]
+    > Episode Complete
+    > ####################################################################################################################################################################
+
+# ######## #
+## Task 2 ##
+# ######## #
+
+> ##################################################################
+> Timestep t0
+> State: [0 0 0 0 0]
+> Sending action 1 to Manager node (move to second-lower-index node)
+> ##################################################################
+> Timestep t1
+> State: [0 0 0 0 0], Action: 1, Next State: [1 1 1 0 0]
+> Running reinforcement
+> Beliefs: [0, 0.555, 0.444], (2/3)
+> Sending action 2 to Manager node (move to third-lower-index node)
+> ##################################################################
+> Timestep t2
+> State: [1 1 1 0 0], Action: 2, Next State: [3 2 1 1 1]
+> Running reinforcement
+> Beliefs: [0, 0.999, 0], (2/3)
+> All nodes explored
+> ##################################################################
+
+    # ####### #
+    # Manager #
+    # ####### #
+
+    > ####################################################################################################################################################################
+    > Timestep t0
+    > You are near door. Astro is near door > Sent state to Decision node
+    > ####################################################################################################################################################################
+    > Timestep t1
+    > Received action #1 (move to second-lower-index node) from Decision node
+    > Mapped action 1 to order go to 0, 1 > Sent Astro node order go to 0, 1 > Waiting for Astro to move. Sir, you can make your move. > Reading your position
+    > Astro is closest to middle of the room > Astro is near middle of the room
+    > Successfully took picture > Ran color segmentation > Detected feet at (466, 329) > Human is closest to middle of the room > You are near middle of the room
+    > Successfully built state st: [1 1 1 0 0] > Sent state to Decision node
+    > ####################################################################################################################################################################
+    > Timestep t2
+    > Received action #2 (move to third-lower-index node) from Decision node
+    > Mapped action 2 to order go to 0, 3 > Sent Astro node order go to 0, 3 > Waiting for Astro to move. Sir, you can make your move. > Reading your position
+    > Astro is closest to Table Michael > Astro is near Table Michael
+    > Successfully took picture > Ran color segmentation > Detected feet at (13, 367) > Human is closest to baxter > You are near baxter
+    > Successfully built state st: [3 2 1 1 1] > Sent state to Decision node
+    > ####################################################################################################################################################################
+    > Timestep t3
+    > Received action #0 (move to lower-index node) from Decision node
+    > Mapped action 0 to order go to 0, 1 > Sent Astro node order go to 0, 1 > Waiting for Astro to move. Sir, you can make your move. > Reading your position
+    > Astro is closest to middle of the room > Astro is near middle of the room
+    > Successfully took picture > Ran color segmentation > Detected feet at (684, 681) > Human is closest to door > You are near door
+    > Successfully built state st: [1 0 1 1 1]
+    > Episode complete
+    > ####################################################################################################################################################################
+
+# ######## #
+## Task 3 ##
+# ######## #
+
+> ###################################################################
+> Timestep t0
+> State: [0 0 0 0 0]
+> Sending action 1 to Manager node (move to second-lower-index node)
+> ##################################################################
+> Timestep t1
+> State: [0 0 0 0 0], Action: 1, Next State: [1 1 1 0 0]
+> Running reinforcement
+> Beliefs: [0, 0.555, 0.444], (2/3)
+> Sending action 1 to Manager node (move to second-lower-index node)
+> ##################################################################
+> Timestep t2
+> State: [1 1 1 0 0], Action: 1, Next State: [2 3 1 1 0]
+> Running reinforcement
+> Beliefs: [0, 0, 0.999], (3/3)
+> Sending action 2 to Manager node (move to third-lower-index node)
+> ##################################################################
+> Timestep t3
+> State: [2 3 1 1 0], Action: 2, Next State: [1 4 1 1 1]
+> Running reinforcement
+> Beliefs: [0.001, 0, 0.999], (3/3)
+> All nodes explored
+> ##################################################################
+
+    # ####### #
+    # Manager #
+    # ####### #
+
+    > ####################################################################################################################################################################
+    > Timestep t0
+    > You are near door. Astro is near door > Sent state to Decision node
+    > ####################################################################################################################################################################
+    > Timestep t1
+    > Received action #1 (move to second-lower-index node) from Decision node
+    > Mapped action 1 to order go to 0, 1 > Sent Astro node order go to 0, 1 > Waiting for Astro to move. Sir, you can make your move. > Reading your position
+    > Astro is closest to middle of the room > Astro is near middle of the room
+    > Successfully took picture > Ran color segmentation > Detected feet at (468, 331) > Human is closest to middle of the room > You are near middle of the room
+    > Successfully built state st: [1 1 1 0 0] > Sent state to Decision node
+    > ####################################################################################################################################################################
+    > Timestep t2
+    > Received action #1 (move to second-lower-index node) from Decision node
+    > Mapped action 1 to order go to 0, 2 > Sent Astro node order go to 0, 2 > Waiting for Astro to move. Sir, you can make your move. > Reading your position
+    > Astro is closest to baxter > Astro is near baxter
+    > Successfully took picture > Ran color segmentation > Detected feet at (962, 158) > Human is closest to Table Michael > You are near Table Michael
+    > Successfully built state st: [2 3 1 1 0] > Sent state to Decision node
+    > ####################################################################################################################################################################
+    > Timestep t3
+    > Received action #2 (move to third-lower-index node) from Decision node
+    > Mapped action 2 to order go to 0, 1 > Sent Astro node order go to 0, 1 > Waiting for Astro to move. Sir, you can make your move. > Reading your position
+    > Astro is closest to middle of the room > Astro is near middle of the room
+    > Successfully took picture > Ran color segmentation > Detected feet at (1148, 368) > Human is closest to Table John > You are near Table John
+    > Successfully built state st: [1 4 1 1 1]
+    > Episode complete
+    > ####################################################################################################################################################################

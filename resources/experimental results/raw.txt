@@ -12,8 +12,7 @@
 [INFO] [1602527757.197448]: New Timestep
 [INFO] [1602527757.207160]: State: [0 0 1 0 0], Action: 3, Next State: [0 1 1 1 0]
 [INFO] [1602527757.216994]: Running reinforcement on st=[0 0 1 0 0], a=3, st+1=[0 1 1 1 0]
-BOPA Loss: [[0.    0.    0.    0.    0.    0.    0.    0.    0.    0.    0.    0.
-  0.    0.    0.    0.729]
+BOPA Loss: [[0    0    0    0    0    0    0    0    0    0    0    0  0.    0.    0.    0.729]
  [0.    0.    0.    0.81  0.    0.    0.    0.81  0.    0.    0.    0.81
   0.81  0.81  0.81  0.81 ]
  [0.    0.    0.    0.    0.    0.    0.    0.    0.    0.    0.    0.
@@ -46,19 +45,6 @@ BOPA Loss: [[1.71 0.   1.71 0.9  1.71 0.   1.71 0.9  0.9  0.   0.9  0.9  1.71 0.
 [INFO] [1602527799.325521]: Sending action 2 to Manager node (move to third-lower-index node)
 
 
-[INFO] [1602527728.331576]: Initializing auxiliary structures
-[0 0 1 0 0]
-[INFO] [1602527728.488771]: Initializing ROS Node adhoc_mmdp_manager
-[INFO] [1602527728.496724]: Setting up Decision node subscriber (local topic at /adhoc_mmdp/decision_manager)
-[INFO] [1602527728.517125]: Setting up Astro node subscriber (local topic at /adhoc_mmdp/astro_manager)
-[INFO] [1602527728.555295]: Setting up Decision node publisher (topic at /adhoc_mmdp/manager_decision)
-[INFO] [1602527728.570650]: Setting up Astro node publisher (topic at /adhoc_mmdp/manager_astro)
-[INFO] [1602527728.588753]: Starting in 5
-[INFO] [1602527729.599298]: Starting in 4
-[INFO] [1602527730.609146]: Starting in 3
-[INFO] [1602527731.617673]: Starting in 2
-[INFO] [1602527732.631036]: Starting in 1
-[INFO] [1602527733.641294]: Starting
 [INFO] [1602527733.652662]: TTS: You are near door. Astro is near door
 [INFO] [1602527736.749440]: Sent state to Decision node: '0 0 1 0 0'
 [INFO] [1602527736.806337]: ############
@@ -69,16 +55,6 @@ BOPA Loss: [[1.71 0.   1.71 0.9  1.71 0.   1.71 0.9  0.9  0.   0.9  0.9  1.71 0.
 [INFO] [1602527736.841536]: TTS: Waiting for Astro to move.
 [INFO] [1602527739.001971]: Received Astro node message: '[0. 0.]'
 [INFO] [1602527739.011123]: TTS: Sir, you can make your move.
-[INFO] [1602527741.420941]: 10
-[INFO] [1602527742.429592]: 9
-[INFO] [1602527743.454511]: 8
-[INFO] [1602527744.464374]: 7
-[INFO] [1602527745.475364]: 6
-[INFO] [1602527746.485518]: 5
-[INFO] [1602527747.494359]: 4
-[INFO] [1602527748.505469]: 3
-[INFO] [1602527749.514387]: 2
-[INFO] [1602527750.526761]: 1
 [INFO] [1602527751.538378]: TTS: Reading your position
 [INFO] [1602527753.223011]: Astro is closest to door
 [INFO] [1602527753.232027]: TTS: Astro is near door
@@ -99,16 +75,6 @@ BOPA Loss: [[1.71 0.   1.71 0.9  1.71 0.   1.71 0.9  0.9  0.   0.9  0.9  1.71 0.
 [INFO] [1602527757.690843]: TTS: Waiting for Astro to move.
 [INFO] [1602527759.863611]: Received Astro node message: '[0. 1.]'
 [INFO] [1602527759.882707]: TTS: Sir, you can make your move.
-[INFO] [1602527762.301922]: 10
-[INFO] [1602527763.311055]: 9
-[INFO] [1602527764.323224]: 8
-[INFO] [1602527765.346568]: 7
-[INFO] [1602527766.355650]: 6
-[INFO] [1602527767.364355]: 5
-[INFO] [1602527768.373149]: 4
-[INFO] [1602527769.382679]: 3
-[INFO] [1602527770.402239]: 2
-[INFO] [1602527771.412212]: 1
 [INFO] [1602527772.423022]: TTS: Reading your position
 [INFO] [1602527774.102537]: Astro is closest to middle of the room
 [INFO] [1602527774.141536]: TTS: Astro is near middle of the room
@@ -129,16 +95,6 @@ BOPA Loss: [[1.71 0.   1.71 0.9  1.71 0.   1.71 0.9  0.9  0.   0.9  0.9  1.71 0.
 [INFO] [1602527778.675471]: TTS: Waiting for Astro to move.
 [INFO] [1602527780.947928]: Received Astro node message: '[0. 3.]'
 [INFO] [1602527780.955406]: TTS: Sir, you can make your move.
-[INFO] [1602527783.364348]: 10
-[INFO] [1602527784.373102]: 9
-[INFO] [1602527785.383121]: 8
-[INFO] [1602527786.393175]: 7
-[INFO] [1602527787.403131]: 6
-[INFO] [1602527788.413272]: 5
-[INFO] [1602527789.421029]: 4
-[INFO] [1602527790.429837]: 3
-[INFO] [1602527791.437690]: 2
-[INFO] [1602527792.446261]: 1
 [INFO] [1602527793.457099]: TTS: Reading your position
 [INFO] [1602527795.130507]: Astro is closest to Table Michael
 [INFO] [1602527795.138130]: TTS: Astro is near Table Michael
@@ -152,19 +108,6 @@ BOPA Loss: [[1.71 0.   1.71 0.9  1.71 0.   1.71 0.9  0.9  0.   0.9  0.9  1.71 0.
 [INFO] [1602527799.216570]: Sent state to Decision node: '3 4 1 1 1'
 [INFO] [1602527799.227793]: Awaiting Astro node's message
 [INFO] [1602527799.332484]: ############
-[INFO] [1602527799.338582]: New Timestep
-[INFO] [1602527799.344775]: Received action #2 (move to third-lower-index node) from Decision node
-[INFO] [1602527799.351053]: Mapped action 2 to order go to 0, 1
-[INFO] [1602527799.360697]: Sent Astro node order go to 0, 1
-[INFO] [1602527799.367488]: TTS: Waiting for Astro to move.
-[INFO] [1602527801.535373]: Received Astro node message: '[0. 1.]'
-[INFO] [1602527801.544290]: TTS: Sir, you can make your move.
-[INFO] [1602527803.953086]: 10
-[INFO] [1602527804.960900]: 9
-[INFO] [1602527805.969354]: 8
-[INFO] [1602527806.977545]: 7
-[INFO] [1602527807.986578]: 6
-^C[INFO] [1602527808.995728]: 5
 
 
 ## 2 ##
