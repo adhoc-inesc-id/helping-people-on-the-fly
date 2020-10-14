@@ -1,11 +1,29 @@
+import time
+
+import pyttsx3
 import yaml
 
 from utils import planar_homography
 from utils.cameras import *
 import cv2
 
+def say_tts(text):
+    engine.say(text)
+    engine.runAndWait()
+
 if __name__ == '__main__':
 
+    """    engine = pyttsx3.init()
+    engine.setProperty("voice", "english-us")
+    engine.setProperty("rate", 150)
+    time.sleep(5)
+    say_tts("Get ready")
+    say_tts("5")
+    say_tts("4")
+    say_tts("3")
+    say_tts("2")
+    say_tts("1")
+    """
 
     with open('config.yml', 'r') as file:
         config = yaml.load(file, Loader=yaml.FullLoader)
@@ -13,18 +31,17 @@ if __name__ == '__main__':
     hue = np.array(config["color segmentation"]["hue"])
     sat = np.array(config["color segmentation"]["sat"])
     val = np.array(config["color segmentation"]["val"])
-    #hue = np.array([30, 59])
-    #sat = np.array([36, 255])
-    #val = np.array([183, 251])
 
-    bgr = RealSenseCamera()
-    room_clean = bgr.take_picture()
-    #bgr_picture = cv2.imread("../resources/images/shoes_near.jpeg")
+    #bgr = RealSenseCamera()
+    #time.sleep(1.0)
+    #room_clean = bgr.take_picture()
+    room_clean = cv2.imread("../room_clean.jpeg")
 
     room_seg = ColorSegmentation(hue, sat, val).segmentation(room_clean)
     center_cam = find_segmented_centers(room_seg)
 
     center_real = planar_homography.camera_to_real_world_point(center_cam)
+    center_real = round(center_real[0],3), round(center_real[1], 3)
     #center_real = center_cam
 
     xoff = -700
