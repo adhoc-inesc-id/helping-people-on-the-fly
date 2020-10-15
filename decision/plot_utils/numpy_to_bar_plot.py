@@ -111,7 +111,7 @@ if __name__ == '__main__':
 
     domains = ("panic-buttons", "environment-reckon", "garbage-collection")
     agents = ("greedy", "bopa", "random")
-    agent_alias = ("Optimal Policy", "BOPA", "Random Policy")
+    agent_alias = ("Greedy (Optimal Policy)", "BOPA", "Random (Random Policy)")
 
     sizes = ("small", "medium", "large")
     teammates = ("greedy", "suboptimal", "random")
